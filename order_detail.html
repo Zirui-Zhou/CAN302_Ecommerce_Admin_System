@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+  <title>Charts - SB Admin</title>
+
+  <link href="css/styles.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <link href="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.13.4/datatables.min.css" rel="stylesheet"/>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.13.4/datatables.min.js"></script>
+  <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+  <script src="js/scripts.js"></script>
+</head>
+<body class="sb-nav-fixed">
+<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+  <!-- Navbar Brand-->
+  <a class="navbar-brand ps-3" href="index.html">SStore System</a>
+  <!-- Sidebar Toggle-->
+  <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+  <!-- Navbar Search-->
+  <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+    <div class="input-group">
+      <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
+      <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="bi bi-search"></i></button>
+    </div>
+  </form>
+  <!-- Navbar-->
+  <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+        <li><a class="dropdown-item" href="#!">Settings</a></li>
+        <li><a class="dropdown-item" href="#!">Activity Log</a></li>
+        <li><hr class="dropdown-divider" /></li>
+        <li><a class="dropdown-item" href="#!">Logout</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+<div id="layoutSidenav">
+  <div id="layoutSidenav_nav">
+    <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+      <div class="sb-sidenav-menu">
+        <div class="nav">
+          <div class="sb-sidenav-menu-heading">Core</div>
+          <a class="nav-link" href="index.html">
+            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+            Dashboard
+          </a>
+
+          <div class="sb-sidenav-menu-heading">Product</div>
+          <a class="nav-link" href="product.html">
+            <div class="sb-nav-link-icon"><i class="bi bi-bag"></i></div>
+            Product
+          </a>
+          <a class="nav-link" href="category.html">
+            <div class="sb-nav-link-icon"><i class="bi bi-grid"></i></div>
+            Category
+          </a>
+
+          <div class="sb-sidenav-menu-heading">Order</div>
+          <a class="nav-link" href="order.html">
+            <div class="sb-nav-link-icon"><i class="bi bi-clipboard"></i></div>
+            Order
+          </a>
+
+          <div class="sb-sidenav-menu-heading">User</div>
+          <a class="nav-link" href="user.html">
+            <div class="sb-nav-link-icon"><i class="bi bi-person"></i></div>
+            User
+          </a>
+
+        </div>
+      </div>
+      <div class="sb-sidenav-footer">
+        <div class="small">Logged in as:</div>
+        Zirui Zhou
+      </div>
+    </nav>
+  </div>
+  <div id="layoutSidenav_content">
+    <main>
+      <div class="container-fluid px-4">
+        <h1 class="mt-4">Order Detail</h1>
+
+        <div class="card mb-4">
+          <div class="card-header">
+            <i class="bi bi-clipboard"></i>
+            Order Information
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col col-8">
+                <div class="row">
+                  <div class="mb-3 row">
+                    <label for="inputOrderId" class="col-sm-2 col-form-label">ID:</label>
+                    <div class="col-sm-10">
+                      <input class="form-control" id="inputOrderId" value="c636b81c-d71f-44b6-9d7e-32e2b365f3b2">
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+              <div class="col col-4">
+                <div class="mb-3 row">
+                  <label for="inputAmount" class="col-sm-4 col-form-label">State:</label>
+                  <div class="col-sm-7">
+                    <div class="input-group">
+                      <label class="input-group-text"><i class="bi bi-truck" style="color: dodgerblue"></i></label>
+                      <select class="form-select">
+                        <option selected>
+                          On Delivery
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div class="row">
+
+              <div class="col col-8">
+                <div class="mb-3 row">
+                  <label for="inputRemark" class="col-sm-2 col-form-label">Remark:</label>
+                  <div class="col-sm-9">
+                    <textarea class="form-control" id="inputRemark" style="resize: none" rows="3">Thank you.</textarea>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        <div class="card mb-4">
+          <div class="card-header">
+            <i class="bi bi-person-circle"></i>
+            User Information
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col col-8">
+                <div class="row">
+                  <div class="mb-3 row">
+                    <label for="inputId" class="col-sm-2 col-form-label">ID:</label>
+                    <div class="col-sm-10">
+                      <input class="form-control" id="inputId" value="1">
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+              <div class="col col-4 ">
+                <div class="row d-flex justify-content-evenly">
+                  <button type="button" class="btn btn-secondary  col-4">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    Check
+                  </button>
+                  <button type="button" class="btn btn-primary  col-4">
+                    <i class="bi bi-check"></i>
+                    Confirm
+                  </button>
+                </div>
+              </div>
+
+            </div>
+            <div class="row">
+
+              <div class="col">
+                <div class="mb-3 row">
+                  <label for="inputName" class="col-sm-4 col-form-label">Name:</label>
+                  <div class="col-sm-7">
+                    <input class="form-control" id="inputName" value="Zirui Zhou" disabled>
+                  </div>
+                </div>
+              </div>
+              <div class="col ">
+                <div class="mb-3 row">
+                  <label for="inputPhoneNumber" class="col-sm-4 col-form-label">Phone:</label>
+                  <div class="col-sm-7">
+                    <input
+                            class="form-control"
+                            type="tel"
+                            id="inputPhoneNumber"
+                            name="phone"
+                            pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}"
+                            value="188-8888-8888"
+                            onblur="reportValidity()"
+                            disabled
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="mb-3 row">
+                  <label for="inputEmail" class="col-sm-4 col-form-label">Email:</label>
+                  <div class="col-sm-7">
+                    <input class="form-control" id="inputEmail" type="email" value="zirui.zhou19@student.xjtlu.edu.cn" onblur="reportValidity()" disabled>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="card mb-4">
+          <div class="card-header">
+            <i class="bi bi-truck"></i>
+            Delivery Information
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col col-8">
+                <div class="row">
+                  <div class="mb-3 row">
+                    <label for="inputAddresseeId" class="col-sm-2 col-form-label">ID:</label>
+                    <div class="col-sm-10">
+                      <input class="form-control" id="inputAddresseeId" value="c636b81c-d71f-44b6-9d7e-32e2b365f3b2">
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+              <div class="col col-4 ">
+                <div class="row d-flex justify-content-evenly">
+                <button type="button" class="btn btn-secondary  col-4">
+                  <i class="bi bi-arrow-clockwise"></i>
+                  Check
+                </button>
+                <button type="button" class="btn btn-primary  col-4">
+                  <i class="bi bi-check"></i>
+                  Confirm
+                </button>
+                </div>
+              </div>
+
+            </div>
+            <div class="row">
+              <div class="col">
+                <div class="mb-3 row">
+                  <label for="inputAddressee" class="col-sm-4 col-form-label">Addressee:</label>
+                  <div class="col-sm-7">
+                    <input class="form-control" id="inputAddressee" value="Zirui Zhou" disabled>
+                  </div>
+                </div>
+              </div>
+              <div class="col ">
+                <div class="mb-3 row">
+                  <label for="inputPhone" class="col-sm-4 col-form-label">Phone:</label>
+                  <div class="col-sm-7">
+                    <input
+                            class="form-control"
+                            type="tel"
+                            id="inputPhone"
+                            name="phone"
+                            pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}"
+                            value="188-8888-8888"
+                            onblur="reportValidity()"
+                            disabled
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col col-4">
+                <div class="mb-3 row">
+                <label class="col-sm-4 col-form-label">District:</label>
+                <div class="col-sm-7">
+                  <div class="row">
+                    <div class="col" style="padding: 0 4px">
+                      <select class="form-select" aria-label="Default select example" disabled>
+                        <option value="1">Jiangsu</option>
+                      </select>
+                    </div>
+                    <div class="col" style="padding: 0 4px">
+                      <select class="form-select" aria-label="Default select example" disabled>
+                        <option value="1">Suzhou</option>
+
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              </div>
+              <div class="col col-8">
+                <div class="row">
+                <label class="col-sm-2 col-form-label">District:</label>
+                <div class="col-sm-10">
+                  <input class="form-control" id="inputAddress" disabled value="Xi'an Jiaotong-Liverpool University, 111 Ren'ai Road, Suzhou Industrial Park">
+                  </div>
+                </div>
+              </div>
+              </div>
+          </div>
+        </div>
+
+        <div class="card mb-4">
+          <div class="card-header">
+            <i class="bi bi-credit-card-fill"></i>
+            Payment Information
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col col-8">
+                <div class="row">
+                  <div class="mb-3 row">
+                    <label for="inputPaymentId" class="col-sm-2 col-form-label">ID:</label>
+                    <div class="col-sm-10">
+                      <input class="form-control" id="inputPaymentId" value="c636b81c-d71f-44b6-9d7e-32e2b365f3b2">
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+              <div class="col col-4 ">
+                <div class="row d-flex justify-content-evenly">
+                  <button type="button" class="btn btn-secondary  col-4">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    Check
+                  </button>
+                  <button type="button" class="btn btn-primary  col-4">
+                    <i class="bi bi-check"></i>
+                    Confirm
+                  </button>
+                </div>
+              </div>
+
+            </div>
+            <div class="row">
+              <div class="col">
+                <div class="mb-3 row">
+                  <label for="inputType" class="col-sm-4 col-form-label">Type:</label>
+                  <div class="col-sm-7">
+                    <input class="form-control" id="inputType" value="Online" disabled>
+                  </div>
+                </div>
+              </div>
+              <div class="col ">
+                <div class="mb-3 row">
+                  <label for="inputPhone" class="col-sm-4 col-form-label">Platform:</label>
+                  <div class="col-sm-7">
+                    <div class="input-group">
+                    <label class="input-group-text"><i class="bi bi-alipay" style="color: #1677FF"></i></label>
+                    <select class="form-select" disabled>
+                      <option selected>
+                        Alipay
+                      </option>
+                    </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="mb-3 row">
+                  <label for="inputAccount" class="col-sm-4 col-form-label">Account:</label>
+                  <div class="col-sm-7">
+                    <input class="form-control" id="inputAccount" value="ziruizhou12345" disabled>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col col-8">
+                <div class="row">
+                  <div class="mb-3 row">
+                    <label for="inputSerial" class="col-sm-2 col-form-label">Serial No.:</label>
+                    <div class="col-sm-10">
+                      <input class="form-control" id="inputSerial" value="1234567890">
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+              <div class="col col-4 ">
+                <div class="row d-flex justify-content-evenly">
+                  <button type="button" class="btn btn-secondary  col-4">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    Check
+                  </button>
+                  <button type="button" class="btn btn-primary  col-4">
+                    <i class="bi bi-check"></i>
+                    Confirm
+                  </button>
+                </div>
+              </div>
+
+            </div>
+            <div class="row">
+              <div class="col ">
+                <div class="mb-3 row">
+                  <label for="inputPhone" class="col-sm-4 col-form-label">Time:</label>
+                  <div class="col-sm-7">
+                    <input type="datetime-local" value="2023-04-13 00:13:45" class="form-control" disabled>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="mb-3 row">
+                  <label for="inputAmount" class="col-sm-4 col-form-label">Amount:</label>
+                  <div class="col-sm-7">
+                    <input class="form-control" id="inputAmount" value="5000 CNY" disabled>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="mb-3 row">
+                  <label for="inputAmount" class="col-sm-4 col-form-label">State:</label>
+                <div class="col-sm-7">
+                <div class="input-group">
+                  <label class="input-group-text"><i class="bi bi-check-square-fill" style="color: green"></i></i></label>
+                  <select class="form-select" disabled>
+                    <option selected>
+                      Done
+                    </option>
+                  </select>
+                </div>
+                </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-4">
+          <div class="card-header">
+            <i class="bi bi-cart4"></i>
+            Product List
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-evenly col-3">
+              <button type="button" class="btn btn-primary col-5">
+                <i class="bi bi-plus-circle"></i>
+                Add
+              </button>
+              <button type="button" class="btn btn-secondary col-5">
+                <i class="bi bi-trash3"></i>
+                Delete
+              </button>
+            </div>
+
+            <hr/>
+
+            <table class="table table-striped" style="vertical-align: baseline; text-align: center" id="example">
+              <thead>
+              <tr>
+                <th ></th>
+                <th >ID</th>
+                <th >Name</th>
+                <th >Image</th>
+                <th >Category</th>
+                <th >Price</th>
+                <th >Number</th>
+                <th >Amount</th>
+                <th >Operation</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td >
+                  <label>
+                    <input class="form-check-input" style="" type="checkbox" value="">
+                  </label>
+                </td>
+                <td >1</td>
+                <td >iPhone 14</td>
+                <td >
+                  <img src="https://media.lanecrawford.com/E/A/E/EAE495_in_xl.jpg" alt="iPhone 14" style="height: 80px">
+                </td>
+                <td >Mobile Phone</td>
+                <td >5000 CNY</td>
+                <td >1</td>
+                <td >
+                  5000 CNY
+                </td>
+                <td class="col-2" style="vertical-align: baseline;">
+                  <button type="button" class="btn btn-primary btn-sm col-5 mx-auto">
+                    Edit
+                  </button>
+                  <button type="button" class="btn btn-danger btn-sm col-5 mx-auto">
+                    Delete
+                  </button>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+
+        <div class="card mb-4">
+          <div class="card-header">
+            <i class="bi bi-check-square"></i>
+            Confirm Modification
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-evenly col-4 mx-auto" style="margin-bottom: 0">
+              <button type="button" class="btn btn-primary">
+                <i class="bi bi-save"></i>
+                Save Changes
+              </button>
+              <button type="button" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i>
+                Back
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </main>
+    <footer class="py-4 bg-light mt-auto">
+      <div class="container-fluid px-4">
+        <div class="d-flex align-items-center justify-content-between small">
+          <div class="text-muted">Copyright &copy; Zirui Zhou 2023</div>
+          <div>
+            <a href="#">Privacy Policy</a>
+            &middot;
+            <a href="#">Terms &amp; Conditions</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+</div>
+
+
+<script>
+  $(document).ready(function () {
+    $('#example').DataTable({
+      searching: false,
+      ordering:  false,
+      lengthMenu: [5, 10, 20],
+      orderFixed: [ 0, "desc" ],
+      columnDefs: [
+        // Center align the header content of column 1
+        { className: "dt-head-center", targets: "_all" },
+        { orderable: false, targets: 0 }
+      ]
+    });
+    $('#example2').DataTable({
+      searching: false,
+      ordering:  false,
+      lengthMenu: [5, 10, 20],
+      orderFixed: [ 0, "desc" ],
+      columnDefs: [
+        // Center align the header content of column 1
+        { className: "dt-head-center", targets: "_all" },
+        { orderable: false, targets: 0 }
+      ]
+    });
+    $('#inputPhoneNumber').keyup(function(){
+      $(this).val($(this).val().replace(/(\d{3})\-?(\d{4})\-?(\d{4})/,'$1-$2-$3'))
+    });
+  });
+
+
+</script>
+</body>
+</html>
