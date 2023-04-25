@@ -46,7 +46,7 @@
                     <i class="bi bi-search"></i>
                   </span>
 
-                                    <input type="text" class="form-control" placeholder="Search Users by Name or ID" aria-describedby="basic-addon1">
+                                    <input type="text" class="form-control" id="search-input" placeholder="Search Users by Name or ID" aria-describedby="basic-addon1">
                                 </div>
                             </div>
                         </div>
@@ -56,12 +56,8 @@
                 <div class="card mb-4">
 
                     <div class="card-body">
-                        <div class="d-flex justify-content-evenly col-3">
-                            <button type="button" class="btn btn-primary col-5">
-                                <i class="bi bi-plus-circle"></i>
-                                Add
-                            </button>
-                            <button type="button" class="btn btn-secondary col-5">
+                        <div class="d-flex  col-3">
+                            <button type="button" class="btn btn-secondary col-5" id="delete-all-btn">
                                 <i class="bi bi-trash3"></i>
                                 Delete
                             </button>
@@ -139,7 +135,7 @@
                                     >
                                         Detail
                                     </button>
-                                    <button type="button" class="btn btn-danger btn-sm col-5 mx-auto">
+                                    <button type="button" class="btn btn-danger btn-sm col-5 mx-auto delete-btn">
                                         Delete
                                     </button>
                                 </td>
@@ -175,5 +171,75 @@
 
     });
 </script>
+<script>
+$(document).ready(function() {
+    // Delete button click handler
+    $(".delete-btn").click(function() {
+        var tr = $(this).closest("tr");
+        var uuid = tr.find("td:eq(1)").text(); // Assume ID is in the 2nd column
+
+        // Display confirmation dialog
+        if (confirm("Are you sure you want to delete this user?")) {
+            // Send AJAX request to delete user
+            $.ajax({
+                url: "delete_user.php",
+                type: "POST",
+                data: { uuid: uuid },
+                success: function(response) {
+                    tr.remove();
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error(textStatus, errorThrown);
+                }
+            });
+        }
+    });
+
+    // Delete All button click handler
+$("#delete-all-btn").click(function() {
+    // Get all checked checkboxes
+    var checkboxes = $("input.form-check-input:checked");
+
+    // Show confirmation dialog
+    if (!confirm("Are you sure you want to delete selected users?")) {
+        return;                         
+    }
+
+    // Iterate over the checkboxes
+    checkboxes.each(function() {
+        var tr = $(this).closest("tr");
+        var uuid = tr.find("td:eq(1)").text(); // Assume ID is in the 2nd column
+        $.ajax({
+            url: "delete_user.php",
+            type: "POST",
+            data: { uuid: uuid },
+            success: function(response) {
+                tr.remove();
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error(textStatus, errorThrown);
+            }
+        });
+    });
+});
+     // Search input keyup handler
+    $("#search-input").keyup(function() {
+        var searchText = $(this).val().toLowerCase();
+        $("tbody tr").filter(function() {
+            var rowText = $(this).text().toLowerCase();
+            return rowText.indexOf(searchText) === -1;
+        }).hide();
+        $("tbody tr").filter(function() {
+            var rowText = $(this).text().toLowerCase();
+            return rowText.indexOf(searchText) !== -1;
+        }).show();
+    });
+
+});
+
+</script>
+
+
+
 </body>
 </html>
