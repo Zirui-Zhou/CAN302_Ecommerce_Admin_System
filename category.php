@@ -126,14 +126,14 @@ $category_list = $stmt->fetchAll();
               <?php
               foreach ($category_list as $category) {
               ?>
-              <tr>
+              <tr class="table_item_row">
                 <td >
                   <label>
                     <input class="form-check-input" style="" type="checkbox" value="">
                   </label>
                 </td>
                 <td >
-                  <?php echo $category["id"] ?>
+                  <span class="id-span"><?php echo $category["id"] ?></span>
                 </td>
                 <td >
                   <?php echo $category["name"] ?>
@@ -154,7 +154,7 @@ $category_list = $stmt->fetchAll();
                   <button type="button" class="btn btn-primary btn-sm col-5 mx-auto">
                     Detail
                   </button>
-                  <button type="button" class="btn btn-danger btn-sm col-5 mx-auto">
+                  <button type="button" class="btn btn-danger btn-sm col-5 mx-auto delete-btn">
                     Delete
                   </button>
                 </td>
@@ -191,7 +191,10 @@ $category_list = $stmt->fetchAll();
         { orderable: false, targets: 0 }
       ]
     });
-
+    $(".delete-btn").click(function () {
+      console.log($(this).closest('.table_item_row').find(".id-span").text())
+      delete_category($(this).closest('.table_item_row').find(".id-span").text());
+    });
   });
 
   function add_new_category(){
@@ -210,7 +213,7 @@ $category_list = $stmt->fetchAll();
     };
     console.log(JSON.stringify(values))
     $.ajax({
-      url: "api/add_category.php",
+      url: "api/category/add.php",
       type: "POST",
       data: JSON.stringify(values),
     })
@@ -221,6 +224,25 @@ $category_list = $stmt->fetchAll();
     .fail(function(data) {
       alert("failure" + data);
     });
+  }
+
+  function delete_category(id){
+    const values = {
+      'id': id,
+    };
+    console.log(JSON.stringify(values))
+    $.ajax({
+      url: "api/category/delete.php",
+      type: "POST",
+      data: JSON.stringify(values),
+    })
+        .done(function(data) {
+          alert("success" + data);
+          location.reload(true);
+        })
+        .fail(function(data) {
+          alert("failure" + data);
+        });
   }
 
 </script>
