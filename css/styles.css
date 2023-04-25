@@ -146,7 +146,6 @@ h2, .h2 {
 h3, .h3 {
   font-size: calc(1.3rem + 0.6vw);
   color:#3a0285;
-  font-family: Bradley Hand;
 }
 @media (min-width: 1200px) {
   h3, .h3 {
