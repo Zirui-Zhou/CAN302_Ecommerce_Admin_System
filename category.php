@@ -3,7 +3,7 @@ $pdo = new PDO("mysql:host=localhost:3306;dbname=can302_ass1", "root", null);
 $stmt = $pdo->prepare("
   select
       c.id as id, c.name as name, description, COUNT(p.id) as count 
-  from category c right join product p on c.id = p.category
+  from category c left join product p on c.id = p.category
   group by c.id
 ");
 $stmt->execute();
@@ -70,7 +70,7 @@ $category_list = $stmt->fetchAll();
 
           <div class="card-body">
             <div class="d-flex justify-content-evenly col-3">
-              <button type="button" class="btn btn-primary col-5">
+              <button type="button" class="btn btn-primary col-5" onclick="add_new_category()">
                 <i class="bi bi-plus-circle"></i>
                 Add
               </button>
@@ -94,6 +94,35 @@ $category_list = $stmt->fetchAll();
               </tr>
               </thead>
               <tbody>
+              <tr id="new_item_input_tr">
+                <td >
+                  <label>
+                    <input class="form-check-input" style="" type="checkbox" value="" disabled>
+                  </label>
+                </td>
+                <td >
+                  <input type="text" class="form-control" value="Auto Generated" disabled>
+                </td>
+                <td >
+                  <input id="name_input" type="text" class="form-control" value="Earphone" >
+                </td>
+                <td >
+                  <textarea id="desc_input" type="text" class="form-control" style="resize: none" rows="2">Earphone</textarea>
+                </td>
+                <td>
+                  <button type="button" class="btn btn-primary btn-sm mx-auto" disabled>
+                    Search 0 item(s)
+                  </button>
+                </td>
+                <td class="col-2">
+                  <button type="button" class="btn btn-primary btn-sm col-5 mx-auto" onclick="submit_new_category()">
+                    Confirm
+                  </button>
+                  <button type="button" class="btn btn-danger btn-sm col-5 mx-auto">
+                    Delete
+                  </button>
+                </td>
+              </tr>
               <?php
               foreach ($category_list as $category) {
               ?>
@@ -147,7 +176,10 @@ $category_list = $stmt->fetchAll();
 </div>
 
 <script>
+  var is_show_input = false;
+
   $(document).ready(function () {
+    $("#new_item_input_tr").hide();
     $('#example').DataTable({
       searching: false,
       ordering:  false,
@@ -161,6 +193,36 @@ $category_list = $stmt->fetchAll();
     });
 
   });
+
+  function add_new_category(){
+    if(is_show_input) {
+      $("#new_item_input_tr").hide();
+    } else {
+      $("#new_item_input_tr").show();
+    }
+    is_show_input = !is_show_input;
+  }
+
+  function submit_new_category(){
+    const values = {
+      'name': $("#name_input").val(),
+      'desc': $("#desc_input").val()
+    };
+    console.log(JSON.stringify(values))
+    $.ajax({
+      url: "api/add_category.php",
+      type: "POST",
+      data: JSON.stringify(values),
+    })
+    .done(function(data) {
+      alert("success" + data);
+      location.reload(true);
+    })
+    .fail(function(data) {
+      alert("failure" + data);
+    });
+  }
+
 </script>
 </body>
 </html>
