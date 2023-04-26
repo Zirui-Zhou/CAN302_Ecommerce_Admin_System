@@ -1,0 +1,6 @@
+POST http://localhost:63342/Ass2/api/user/login.php?_ijt=jc9m9vtd6niv7qgphs1c08v36i&_ij_reload=RELOAD_ON_SAVE
+
+{
+    "name": "Chongxi Yu",
+    "password": "Chongxi Yu"
+}

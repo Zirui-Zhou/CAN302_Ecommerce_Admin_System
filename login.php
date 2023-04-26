@@ -9,6 +9,7 @@
         <title>Login-Admin</title>
         <link href="css/styles.css" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.13.4/datatables.min.js"></script>
     </head>
     <body class="bg-primary" >
         <div id="layoutAuthentication">
@@ -20,7 +21,7 @@
                                 <div class="card shadow-lg border-0 rounded-lg mt-5">
                                     <div class="card-header"><h3 class="text-center font-weight-light my-4">Ellen's Store Management System</h3></div>
                                     <div class="card-body">
-                                        <form>
+                                        <form id="login-form">
                                             <div class="form-floating mb-3">
                                                 <input class="form-control" id="inputEmail" type="email" placeholder="name@example.com" />
                                                 <label for="inputEmail">Username</label>
@@ -34,7 +35,7 @@
                                                 <label class="form-check-label" for="inputRememberPassword">Remember Password</label>
                                             </div>
                                             <div class=" mt-4 mb-0" style="text-align: right">
-                                                <a class="btn btn-primary" href="index.html">Login</a>
+                                                <button class="btn btn-primary login-btn" >Login</button>
                                             </div>
                                         </form>
                                     </div>
@@ -61,5 +62,33 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="js/scripts.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(".login-btn").click(function () {
+                const name = $(this).closest('#login-form').find("#inputEmail").val()
+                const password = $(this).closest('#login-form').find("#inputPassword").val()
+                login(name, password);
+            });
+        });
+
+        function login(name, password) {
+            const values = {
+                'name': name,
+                'password': password,
+            };
+            $.ajax({
+                url: "api/user/login.php",
+                type: "POST",
+                data: JSON.stringify(values),
+            })
+                .done(function(data) {
+                    alert("success" + data);
+                })
+                .fail(function(data) {
+                    alert("failure" + data);
+                });
+        }
+
+    </script>
     </body>
 </html>
