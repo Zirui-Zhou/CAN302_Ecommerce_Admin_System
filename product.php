@@ -1,6 +1,9 @@
 <?php
+include_once('config.php');
+//get the key word
+$keyword = empty($_GET["keyword"])?'':$_GET["keyword"];
 
-$pdo = new PDO("mysql:host=localhost:3306;dbname=can302_ass1", "root", null);
+
 $stmt = $pdo->prepare("
     select
         id, name, description
@@ -9,11 +12,13 @@ $stmt = $pdo->prepare("
 $stmt->execute();
 $category_list = $stmt->fetchAll();
 
-$sql_where = isset($_GET["c"]) ? "where category = '{$_GET["c"]}'" : "";
+$sql_where = ' 1 ';
+$sql_where .= !empty($_GET["category"]) ? " and  category = '{$_GET["category"]}'" : " ";
+$sql_where .= !empty($_GET["keyword"]) ? " and   name like '%{$keyword}%'  " : " ";
 $stmt = $pdo->prepare("
     select
         id, category, name, price, price_unit, state, stock, image_url
-    from product
+    from product where 
     {$sql_where}
 ");
 $stmt->execute();
@@ -42,6 +47,7 @@ $product_state = getProductStateList();
   <script src="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.13.4/datatables.min.js"></script>
   <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
   <script src="js/scripts.js"></script>
+  
 
 </head>
 <body class="sb-nav-fixed">
@@ -58,6 +64,7 @@ $product_state = getProductStateList();
             Product Search
           </div>
           <div class="card-body">
+			<form action="product.php" method="get">
             <div class="row">
               <div class="col d-flex justify-content-evenly align-items-center">
                 <div class="col-5">Product Category:</div>
@@ -66,9 +73,12 @@ $product_state = getProductStateList();
                     All Categories
                   </button>
                   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
-                    <a class="dropdown-item" href="#">Something else here</a>
+					  <?php foreach($category_list as $key=>$val){ ?>
+					  
+					  
+					   <a class="dropdown-item" href="product.php?category=<?php echo $val['id'] ?>&keyword=<?php echo $keyword ?>"><?php echo $val['name'] ?></a>
+					  <?php } ?>
+                   
                   </div>
                 </div>
               </div>
@@ -82,29 +92,30 @@ $product_state = getProductStateList();
                     <i class="bi bi-search"></i>
                   </span>
 
-                  <input type="text" class="form-control" placeholder="Search Products by Name or ID" aria-describedby="basic-addon1">
+                  <input type="text" class="form-control" placeholder="Search Products by Name or ID" aria-describedby="basic-addon1" name="keyword">
                 </div>
               </div>
             </div>
-          </div>
+            </form>
+		  </div>
         </div>
 
         <div class="card mb-4">
 
           <div class="card-body">
             <div class="d-flex justify-content-evenly col-3">
-              <button type="button" class="btn btn-primary col-5">
+              <a type="button" class="btn btn-primary col-5" href="product_detail.php?act=add">
                 <i class="bi bi-plus-circle"></i>
                 Add
-              </button>
-              <button type="button" class="btn btn-secondary col-5">
+              </a>
+              <button type="button" class="btn btn-secondary col-5" onclick="document.getElementById('table_Form').submit()">
                 <i class="bi bi-trash3"></i>
                 Delete
               </button>
             </div>
 
             <hr/>
-
+            <form action="product_delete.php?act=batch" method="post" id="table_Form">
             <table class="table table-striped" style="vertical-align: middle; text-align: center" id="example">
               <thead>
               <tr>
@@ -126,7 +137,7 @@ $product_state = getProductStateList();
               <tr>
                 <td >
                   <label>
-                    <input class="form-check-input" style="" type="checkbox" value="">
+                    <input class="form-check-input" name="id[]" style="" type="checkbox" value="<?php echo $product["id"] ?>">
                   </label>
                 </td>
                 <td >
@@ -160,12 +171,12 @@ $product_state = getProductStateList();
                   <?php echo $product_state[$product["state"]]->getBadge()->getBadgeHtml() ?>
                 </td>
                 <td >
-                  <button type="button" class="btn btn-primary btn-sm col-5 mx-auto">
+                  <a  href="product_detail.php?act=edit&id=<?php echo $product["id"] ?>" class="btn btn-primary btn-sm col-5 mx-auto">
                     Detail
-                  </button>
-                  <button type="button" class="btn btn-danger btn-sm col-5 mx-auto">
+                  </a>
+                  <a href="product_delete.php?act=delete&id=<?php echo $product["id"] ?>" class="btn btn-danger btn-sm col-5 mx-auto">
                     Delete
-                  </button>
+                  </a>
                 </td>
               </tr>
               <?php
@@ -173,7 +184,7 @@ $product_state = getProductStateList();
               ?>
               </tbody>
             </table>
-
+			</form>
           </div>
           <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
         </div>
@@ -199,6 +210,9 @@ $product_state = getProductStateList();
     });
 
   });
+  
+  
+  
 </script>
 </body>
 </html>
