@@ -9,14 +9,14 @@ use state\ProductState;
 use state\UserRole;
 use state\UserState;
 
-include ("class\common\Badge.php");
-include ("class\common\Country.php");
-include ("class\common\Icon.php");
-include ("class\state\UserState.php");
-include ("class\state\UserRole.php");
-include ("class\state\OrderState.php");
-include ("class\state\ProductState.php");
-include ("class\state\PaymentPlatform.php");
+include ("class/common/Badge.php");
+include ("class/common/Country.php");
+include ("class/common/Icon.php");
+include ("class/state/UserState.php");
+include ("class/state/UserRole.php");
+include ("class/state/OrderState.php");
+include ("class/state/ProductState.php");
+include ("class/state/PaymentPlatform.php");
 
 $pdo = new PDO("mysql:host=localhost:3306;dbname=can302_ass1", "root", null);
 

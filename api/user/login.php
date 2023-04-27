@@ -51,7 +51,7 @@ if($hashed === $result["password"]) {
      */
     $jwt = JWT::encode($payload, $key, 'HS256');
 //    $decoded = JWT::decode($jwt, new Key($key, 'HS256'));
-    echo $jwt;
+
 
 //    print_r($decoded);
 

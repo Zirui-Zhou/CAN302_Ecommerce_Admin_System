@@ -10,7 +10,7 @@
         <link href="css/styles.css" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     </head>
-    <body class="bg-primary" >
+    <body class="bg-login" >
         <div id="layoutAuthentication">
             <div id="layoutAuthentication_content">
                 <main>
@@ -18,12 +18,12 @@
                         <div class="row justify-content-center">
                             <div class="col-lg-5">
                                 <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Ellen's Store Management System</h3></div>
+                                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Ellen's Store Manage System</h3></div>
                                     <div class="card-body">
                                         <form>
                                             <div class="form-floating mb-3">
                                                 <input class="form-control" id="inputEmail" type="email" placeholder="name@example.com" />
-                                                <label for="inputEmail">Username</label>
+                                                <label for="inputEmail">Administrator</label>
                                             </div>
                                             <div class="form-floating mb-3">
                                                 <input class="form-control" id="inputPassword" type="password" placeholder="Password" />
@@ -37,6 +37,9 @@
                                                 <a class="btn btn-primary" href="index.html">Login</a>
                                             </div>
                                         </form>
+                                    </div>
+                                    <div class="card-footer text-center py-3">
+                                        <div class="small"><a href="register.html">Need an account? Sign up!</a></div>
                                     </div>
                                 </div>
                             </div>
@@ -62,8 +65,39 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="js/scripts.js"></script>
     <script>
-        
-
+        import axios from "axios";
+        import cookie from 'js-cookie'
+        const service = axios.create({
+            baseURL: 'http://ycrzjn .natappfree.cc',
+            timeout: 5000
+        })
+       function submitLogin(){
+                login.submitLogin(this.user).then(res => {
+                    Cookie.set('guli_token', res.data.data.token, {domain: ' localhost'})//调用接口发送请求获取用户数据
+                    login.getLoginUserInfo().then(res => {
+                        // 存储返回的用户数据
+                        this.loginInfo = res.data.data.userInfo
+                        //Cookie存储用户数据到token
+                        //第一个参数存储的token名，第二个参数，将服务器返回的用户数据转为Json字符串存储
+                        //第三个参数 作用域
+                        Cookie.set('guli_ucenter', JSON.stringify(this.loginInfo), {domain: 'localhost'})
+                    })
+                    this.$router.push('/')
+                })
+        }
+        service.interceptors.request.use(
+            config => {
+            //如果token中存在名为guli_token的值，就把这个token添加到请求头中
+                if (cookie.get('guli_token')) {
+                    config.headers['token'] = cookie.get('guli_token');
+                }
+                return config
+            },
+            err => {
+                return Promise.reject(err);
+            }
+        )
+        export default service
     </script>
     </body>
 </html>

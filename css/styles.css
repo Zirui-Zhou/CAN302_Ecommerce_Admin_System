@@ -96,31 +96,15 @@
   padding:0;
 }
 body {
-  width:100%;
-  height:100vh;
-  background-size: 400% 400%;
   font-family: var(--bs-body-font-family);
   font-size: var(--bs-body-font-size);
   font-weight: var(--bs-body-font-weight);
   line-height: var(--bs-body-line-height);
   color: var(--bs-body-color);
   text-align: var(--bs-body-text-align);
-  background: linear-gradient(-45deg,#ee6654,#e71c6e,#2396d5,#23c5ab) !important;
   background-color: var(--bs-body-bg);
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  animation: moveBg 10s linear infinite;
-}
-@keyframes moveBg {
-  0%{
-    background-position: 0% 50%;
-  }
-  50%{
-    background-position: 100% 50%;
-  }
-  100%{
-    background-position: 0% 50%;
-  }
 }
 hr {
   margin: 1rem 0;
@@ -8144,17 +8128,29 @@ textarea.form-control-lg {
   --bs-text-opacity: 1;
 }
 
-.bg-primary {
+.bg-login {
   --bs-bg-opacity: 1;
   width:100%;
   height:100vh;
+  background: linear-gradient(-45deg,#ee6654,#e71c6e,#2396d5,#23c5ab) ;
   background-size: 400% 400%;
-  /*background: linear-gradient(-45deg,#ee6654,#e71c6e,#2396d5,#23c5ab) !important;*/
-  -webkit-animation: Gradient 15s linear infinite;
-  -moz-animation: Gradient 15s linear infinite;
-  animation: Gradient 10s linear infinite;
+  animation: moveBg 2.5s linear infinite;
 }
-
+@keyframes moveBg {
+  0%{
+    background-position: 0% 50%;
+  }
+  50%{
+    background-position: 100% 50%;
+  }
+  100%{
+    background-position: 0% 50%;
+  }
+}
+.bg-primary{
+  --bs-bg-opacity: 1;
+  background-color:#6610f2;
+}
 .bg-secondary {
   --bs-bg-opacity: 1;
   background-color: rgba(var(--bs-secondary-rgb), var(--bs-bg-opacity)) !important;
