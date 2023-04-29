@@ -222,7 +222,7 @@
               <tr class="table_address_row">
                 <td >
                   <label>
-                    <input class="form-check-input" style="" type="checkbox" value="">
+                    <input class="form-check-input address_check" style="" type="checkbox" value="">
                   </label>
                 </td>
                 <td class="address_id">
@@ -357,7 +357,7 @@
                 <i class="bi bi-plus-circle"></i>
                 Add
               </button>
-              <button type="button" class="btn btn-secondary col-5">
+              <button type="button" class="btn btn-secondary col-5 payment-delete-all-btn">
                 <i class="bi bi-trash3"></i>
                 Delete
               </button>
@@ -400,7 +400,7 @@
 
                 <td >
                   <label>
-                    <input class="form-check-input" style="" type="checkbox" value="">
+                    <input class="form-check-input payment_check" style="" type="checkbox" value="">
                   </label>
                 </td>
 
@@ -608,32 +608,37 @@
       delete_payment($(this).closest('.table_payment_row').find(".payment_id").text());
     });
     $(".address-delete-all-btn").click(function() {
-    // Get all checked checkboxes
-    var checkboxes = $("input.form-check-input:checked");
+        // Get all checked checkboxes
+        var checkboxes = $(".address_check:checked");
 
-    // Show confirmation dialog
-    if (!confirm("Are you sure you want to delete selected users?")) {
-        return;                         
-    }
+        // Show confirmation dialog
+        if (!confirm("Are you sure you want to delete selected addresses?")) {
+                return;                         
+        }
 
-    // Iterate over the checkboxes
-    checkboxes.each(function() {
-        var tr = $(this).closest("table_address_row");
-        var id = tr.find(".address_id").text(); // Assume ID is in the 2nd column
-        $.ajax({
-                url: "api/category/delete_address.php",
-                type: "POST",
-                data: JSON.stringify(values),
-        })
-        .done(function(data) {
-                alert("success" + data);
-                location.reload(true);
-        })
-        .fail(function(data) {
-                alert("failure" + data);
+        // Iterate over the checkboxes
+        checkboxes.each(function() {
+                var tr = $(this).closest(".table_address_row");
+                var id = tr.find(".address_id").text(); // Assume ID is in the 2nd column
+                delete_address(id);
         });
-    });
-});
+     });
+     $(".payment-delete-all-btn").click(function() {
+        // Get all checked checkboxes
+        var checkboxes = $(".payment_check:checked");
+
+        // Show confirmation dialog
+        if (!confirm("Are you sure you want to delete selected payment methods?")) {
+                return;                         
+        }
+
+        // Iterate over the checkboxes
+        checkboxes.each(function() {
+                var tr = $(this).closest(".table_payment_row");
+                var id = tr.find(".payment_id").text(); // Assume ID is in the 2nd column
+                delete_payment(id);
+        });
+     });
     //$('#countrypicker').countrypicker();
   });
 

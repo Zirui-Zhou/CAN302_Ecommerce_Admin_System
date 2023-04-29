@@ -16,7 +16,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.13.4/datatables.min.js"></script>
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-    <script src="js/scripts.js"></script>
+    
 </head>
 <body class="sb-nav-fixed">
 <?php require("top_nav.php") ?>
@@ -57,7 +57,7 @@
 
                     <div class="card-body">
                         <div class="d-flex  col-3">
-                            <button type="button" class="btn btn-secondary col-5" id="delete-all-btn">
+                            <button type="button" class="btn btn-secondary col-5 user-delete-all-btn">
                                 <i class="bi bi-trash3"></i>
                                 Delete
                             </button>
@@ -96,13 +96,13 @@
                             <?php
                                 foreach($lists as $item){
                             ?>
-                            <tr>
+                            <tr class="table_user_row">
                                 <td >
                                     <label>
-                                        <input class="form-check-input" style="" type="checkbox" value="">
+                                        <input class="form-check-input user_check" style="" type="checkbox" value="">
                                     </label>
                                 </td>
-                                <td >
+                                <td class="user_id">
                                     <?php
                                         echo $item["id"];
                                     ?>
@@ -135,7 +135,7 @@
                                     >
                                         Detail
                                     </button>
-                                    <button type="button" class="btn btn-danger btn-sm col-5 mx-auto delete-btn">
+                                    <button type="button" class="btn btn-danger btn-sm col-5 mx-auto user-delete-btn">
                                         Delete
                                     </button>
                                 </td>
@@ -174,54 +174,28 @@
 <script>
 $(document).ready(function() {
     // Delete button click handler
-    $(".delete-btn").click(function() {
-        var tr = $(this).closest("tr");
-        var uuid = tr.find("td:eq(1)").text(); // Assume ID is in the 2nd column
-
-        // Display confirmation dialog
-        if (confirm("Are you sure you want to delete this user?")) {
-            // Send AJAX request to delete user
-            $.ajax({
-                url: "delete_user.php",
-                type: "POST",
-                data: { uuid: uuid },
-                success: function(response) {
-                    tr.remove();
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error(textStatus, errorThrown);
-                }
-            });
-        }
+    $(".user-delete-btn").click(function () {
+      console.log($(this).closest('.table_user_row').find(".user_id").text())
+      delete_user($(this).closest('.table_user_row').find(".user_id").text());
     });
 
     // Delete All button click handler
-$("#delete-all-btn").click(function() {
-    // Get all checked checkboxes
-    var checkboxes = $("input.form-check-input:checked");
+$(".user-delete-all-btn").click(function() {
+        // Get all checked checkboxes
+        var checkboxes = $(".user_check:checked");
 
-    // Show confirmation dialog
-    if (!confirm("Are you sure you want to delete selected users?")) {
-        return;                         
-    }
+        // Show confirmation dialog
+        if (!confirm("Are you sure you want to delete selected users?")) {
+                return;                         
+        }
 
-    // Iterate over the checkboxes
-    checkboxes.each(function() {
-        var tr = $(this).closest("tr");
-        var uuid = tr.find("td:eq(1)").text(); // Assume ID is in the 2nd column
-        $.ajax({
-            url: "delete_user.php",
-            type: "POST",
-            data: { uuid: uuid },
-            success: function(response) {
-                tr.remove();
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.error(textStatus, errorThrown);
-            }
+        // Iterate over the checkboxes
+        checkboxes.each(function() {
+                var tr = $(this).closest(".table_user_row");
+                var id = tr.find(".user_id").text(); // Assume ID is in the 2nd column
+                delete_user(id);
         });
-    });
-});
+     });
      // Search input keyup handler
     $("#search-input").keyup(function() {
         var searchText = $(this).val().toLowerCase();
@@ -237,6 +211,24 @@ $("#delete-all-btn").click(function() {
 
 });
 
+function delete_user(id){
+    const values = {
+      'id': id,
+    };
+    console.log(JSON.stringify(values))
+    $.ajax({
+      url: "api/user/delete_user.php",
+      type: "POST",
+      data: JSON.stringify(values),
+    })
+        .done(function(data) {
+          alert("success" + data);
+          location.reload(true);
+        })
+        .fail(function(data) {
+          alert("failure" + data);
+        });
+}
 </script>
 
 
