@@ -1,11 +1,13 @@
 {
   "ExpandedNodes": [
     "",
+    "\\api",
+    "\\api\\category",
     "\\assets",
     "\\class",
     "\\class\\state",
     "\\css"
   ],
-  "SelectedNode": "\\category.html",
+  "SelectedNode": "\\api\\category\\add.php",
   "PreviewInSolutionExplorer": false
 }

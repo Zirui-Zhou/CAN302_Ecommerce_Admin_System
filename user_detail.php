@@ -179,11 +179,11 @@
           </div>
           <div class="card-body">
             <div class="d-flex justify-content-evenly col-3">
-              <button type="button" class="btn btn-primary col-5" id = "add-address-btn">
+              <button type="button" class="btn btn-primary col-5" id = "add-address-btn" onclick="add_new_address()">
                 <i class="bi bi-plus-circle"></i>
                 Add
               </button>
-              <button type="button" class="btn btn-secondary col-5">
+              <button type="button" class="btn btn-secondary col-5 address-delete-all-btn">
                 <i class="bi bi-trash3"></i>
                 Delete
               </button>
@@ -216,16 +216,16 @@
               $order_list = $stmt->fetchAll();
 
               $country = getCountryList();
-
+             
               foreach ($order_list as $item) {
               ?>
-              <tr>
+              <tr class="table_address_row">
                 <td >
                   <label>
                     <input class="form-check-input" style="" type="checkbox" value="">
                   </label>
                 </td>
-                <td>
+                <td class="address_id">
                   <?php echo $item["id"] ?>
                 </td>
                 <td >
@@ -270,7 +270,7 @@
                   <button type="button" class="btn btn-primary btn-sm col-5 mx-auto" id = "address-edit-btn">
                     Edit
                   </button>
-                  <button type="button" class="btn btn-danger btn-sm col-5 mx-auto" id = "address-delete-btn">
+                  <button type="button" class="btn btn-danger btn-sm col-5 mx-auto address-delete-btn" >
                     Delete
                   </button>
                 </td>
@@ -279,6 +279,68 @@
               }
               ?>
               </tbody>
+              <tr id="new_address_input_tr">
+                <td >
+                  <label>
+                    <input class="form-check-input" style="" type="checkbox" value="" disabled id="address_id_input">
+                  </label>
+                </td>
+
+                <td id="address_id">
+                  <?php 
+                        include 'UUID.php';
+                        $uuid = UUID::v4();
+                        echo $uuid
+                  ?>
+                </td>
+
+                <td >
+                  <?php echo $user_info["name"] ?>
+                </td>
+                <td >
+                  <?php echo $user_info["phone"] ?>
+                </td>
+                <td class=" col-2" >
+                    <select class="selectpicker"  id = "country_input">
+                      <?php
+                      foreach ($country as $key=>$value) {
+                        $selected = $key===$item["country"] ? "selected" : "";
+                        $icon = strtolower($key);
+                        echo "
+                            <option
+                                value='{$key}'
+                                {$selected}
+                                data-content='
+                                    <span 
+                                        class=\"fi fi-{$icon}\" 
+                                        style=\"margin-right: 10px\">
+                                    </span>
+                                    {$value->getName()}'
+                            ></option>
+                        ";
+                      }
+                      ?>
+                    </select>
+                </td>
+                <td >
+                  <textarea id="address_input" type="text" class="form-control" style="resize: none" rows="4"></textarea>
+                </td>
+                <td >
+                  <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="address_is_default_input"
+                  >
+                </td>
+                <td class="col-2">
+                  <button type="button" class="btn btn-primary btn-sm col-5 mx-auto" onclick="submit_new_address()">
+                    Confirm
+                  </button>
+                  <button type="button" class="btn btn-danger btn-sm col-5 mx-auto">
+                    Delete
+                  </button>
+                </td>
+              </tr>
             </table>
 
           </div>
@@ -291,7 +353,7 @@
           </div>
           <div class="card-body">
             <div class="d-flex justify-content-evenly col-3">
-              <button type="button" class="btn btn-primary col-5">
+              <button type="button" class="btn btn-primary col-5" onclick = "add_new_payment()">
                 <i class="bi bi-plus-circle"></i>
                 Add
               </button>
@@ -317,6 +379,7 @@
               </tr>
               </thead>
               <tbody>
+              
               <?php
               $stmt = $pdo->prepare("
                 select
@@ -333,7 +396,7 @@
               foreach ($payment_list as $payment) {
                 $platform = $payment_platform[$payment["platform"]];
               ?>
-              <tr>
+              <tr class="table_payment_row">
 
                 <td >
                   <label>
@@ -341,7 +404,7 @@
                   </label>
                 </td>
 
-                <td>
+                <td class="payment_id">
                   <?php echo $payment["id"] ?>
                 </td>
                 <td >
@@ -375,7 +438,7 @@
                   <button type="button" class="btn btn-primary btn-sm col-5 mx-auto" id = "edit-btn">
                     Edit
                   </button>
-                  <button type="button" class="btn btn-danger btn-sm col-5 mx-auto" id = "delete-btn">
+                  <button type="button" class="btn btn-danger btn-sm col-5 mx-auto payment-delete-btn">
                     Delete
                   </button>
                 </td>
@@ -384,12 +447,60 @@
               }
               ?>
               </tbody>
+              <tr id="new_payment_input_tr">
+                <td >
+                  <label>
+                    <input class="form-check-input" style="" type="checkbox" value="" disabled>
+                  </label>
+                </td>
+
+                <td id="payment_id">
+                  <?php 
+                        
+                        $uuid = UUID::v4();
+                        echo $uuid
+                  ?>
+                </td>
+
+                <td>
+                        Online
+                </td>
+                <td >
+                        <select name="options" id="platform_input">
+                                <option value="option1">Alipay
+                                </option>
+
+                                <option value="option2">WeChat Pay</option>
+                                <option value="option3">PayPal</option>
+                        </select>
+                </td>
+
+                <td >
+                  <?php echo $user_info["name"] ?>
+                </td>
+                <td>
+                        Never use
+                </td>
+                <td >
+                  <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="payment_is_default_input"
+                  >
+                </td>
+                <td class="col-2">
+                  <button type="button" class="btn btn-primary btn-sm col-5 mx-auto" onclick="submit_new_payment()">
+                    Confirm
+                  </button>
+                  <button type="button" class="btn btn-danger btn-sm col-5 mx-auto">
+                    Delete
+                  </button>
+                </td>
+              </tr>
             </table>
 
           </div>
         </div>
-
-      
 
         <div class="card mb-4">
           <div class="card-header">
@@ -402,7 +513,7 @@
                 <i class="bi bi-save"></i>
                 Save Changes
               </button>
-              <button type="button" class="btn btn-secondary" id="back-btn">
+              <button type="button" class="btn btn-secondary" id="back-btn" onclick = "location.href='user.php' ">
                 <i class="bi bi-arrow-left"></i>
                 Back
               </button>
@@ -419,100 +530,12 @@
 </div>
 
 <script>
-$('#address-edit-btn').click(function() {
-  // 找到当前点击的edit按钮所在的那一行（tr）
-  var row = $(this).closest('tr');
+  var is_show_payment = false;
+  var is_show_address = false;
 
-  // 找到默认复选框，并将其设置为可选状态
-  var defaultCheckbox = row.find('input[type="checkbox"]');
-  defaultCheckbox.prop('disabled', false);
-
-  var countrySelect =row.find('select.selectpicker');
-  countrySelect.prop('disabled',false);
-});
-
-// 监听“Add”按钮的点击事件
-$('#add-address-btn').on('click', function() {
-  // 创建新的行
-  var newRow = $('<tr></tr>');
-
-  var cell1 = $('<td><label><input class="form-check-input" style="" type="checkbox" value=""></label></td>');
-   newRow.append(cell1);
-   var cell2 = $('<td><?php echo $item["id"] ?></td>');
-   newRow.append(cell2);
-   var cell3 = $('<td ><?php echo $item["addressee"] ?></td>');
-   newRow.append(cell3);
-   var cell4 = $('<td > <span style="white-space: nowrap;"><?php echo $item["phone"] ?></span></td>');
-   newRow.append(cell4);
-   var cell5 = $('<td class="col-2"></td>');
-  var select = $('#country-select'); // 获取 ID 为 mySelect 的元素
-  cell5.append(select);
-  newRow.append(cell5);
-  var cell6 = $('<td class="col-3"></td>');
-  var input = $('<input type="text" class="form-control">');
-  input.css({
-  'height': '100px',
-});
-  cell6.append(input);
-  newRow.append(cell6);
-  var cell7 = $('<td><input type="checkbox" class="form-check-input" <?php echo $item["is_default"] ? "checked" : "" ?> id="checkDefault" ></td>');
-  newRow.append(cell7);
-  //var cell8 = $('<td class="col-2"></tc>');
-  // 添加“Confirm”按钮和"delete"按钮
-  
-var confirmAddressBtn = $('<button type="button" class="btn btn-primary btn-sm col-5 mx-auto confirm-btn">Confirm</button>');
-confirmAddressBtn.css('white-space', 'nowrap'); // 设置不换行
-var deleteAddressBtn = $('<button type="button" class="btn btn-danger btn-sm col-5 mx-auto" id = "address-delete-btn">Delete</button>');
-newRow.append($('<td class="col-2"></td>').append(confirmAddressBtn).append($('<span></span>').css('width', '10px')).append(deleteAddressBtn).css('margin-left', '10px'));
-//var cell8 = $('<td class="col-2"><button type="button" class="btn btn-primary btn-sm col-5 mx-auto" id = "edit-btn">Edit</button><button type="button" class="btn btn-danger btn-sm col-5 mx-auto" id = "delete-btn">Delete</button></td>');
-
-  // 在表格最后添加新行
-  $('#example tbody').append(newRow);
-});
-
-// 监听“Confirm”按钮的点击事件
-$('#address-table tbody').on('click', '.confirm-btn', function() {
-  var newRow = $(this).closest('tr');
-  var inputList = newRow.find('input');
-
-  // 获取文本框中的值
-  var addressee = inputList.eq(0).val();
-  var phone = inputList.eq(1).val();
-  var country = inputList.eq(2).val();
-  var address = inputList.eq(3).val();
-  var isDefault = inputList.eq(4).prop('checked');
-
-  // 将地址保存到数据库中
-  $.ajax({
-    url: 'save_address.php',
-    method: 'POST',
-    data: {
-      addressee: addressee,
-      phone: phone,
-      country: country,
-      address: address,
-      isDefault: isDefault
-    },
-    success: function(response) {
-      // 更新表格中的数据
-      newRow.find('td').eq(0).text(response.id);
-      newRow.find('td').eq(1).text(addressee);
-      newRow.find('td').eq(2).text(phone);
-      newRow.find('td').eq(3).text(country);
-      newRow.find('td').eq(4).text(address);
-      newRow.find('td').eq(5).text(isDefault ? 'Yes' : 'No');
-
-      // 将“Confirm”按钮改回“Edit”按钮
-      var editBtn = $('<button type="button" class="btn btn-primary btn-sm col-5 mx-auto edit-btn">Edit</button>');
-      newRow.find('td').last().empty().append(editBtn);
-    }
-  });
-});
-
-    document.getElementById("back-btn").addEventListener("click", function() {
-    window.location.href = "user.php";
-  });
   $(document).ready(function () {
+    $("#new_payment_input_tr").hide();
+    $("#new_address_input_tr").hide();
     $('#example').DataTable({
       searching: false,
       ordering:  false,
@@ -540,87 +563,187 @@ $('#address-table tbody').on('click', '.confirm-btn', function() {
     $('#inputPhoneNumber').keyup(function(){
       $(this).val($(this).val().replace(/(\d{3})\-?(\d{4})\-?(\d{4})/,'$1-$2-$3'))
     });
-
     $('.selectpicker').selectpicker();
-    //$('#countrypicker').countrypicker();
-
-    $('#add-address-btn').on('click', function() {
-  // 创建新的行
-  var newRow = $('<tr></tr>');
-
-  var cell1 = $('<td><label><input class="form-check-input" style="" type="checkbox" value=""></label></td>');
-   newRow.append(cell1);
-   var cell2 = $('<td><?php echo $item["id"] ?></td>');
-   newRow.append(cell2);
-   var cell3 = $('<td ><?php echo $item["addressee"] ?></td>');
-   newRow.append(cell3);
-   var cell4 = $('<td > <span style="white-space: nowrap;"><?php echo $item["phone"] ?></span></td>');
-   newRow.append(cell4);
-   var cell5 = $('<td class="col-2"></td>');
-  var select = $('#country-select'); // 获取 ID 为 mySelect 的元素
-  cell5.append(select);
-  newRow.append(cell5);
-  var cell6 = $('<td class="col-3"></td>');
-  var input = $('<input type="text" class="form-control">');
-  input.css({
-  'height': '100px',
-});
-  cell6.append(input);
-  newRow.append(cell6);
-  var cell7 = $('<td><input type="checkbox" class="form-check-input" <?php echo $item["is_default"] ? "checked" : "" ?> id="checkDefault" ></td>');
-  newRow.append(cell7);
-  //var cell8 = $('<td class="col-2"></tc>');
-  // 添加“Confirm”按钮和"delete"按钮
-  
-var confirmAddressBtn = $('<button type="button" class="btn btn-primary btn-sm col-5 mx-auto confirm-btn">Confirm</button>');
-confirmAddressBtn.css('white-space', 'nowrap'); // 设置不换行
-var deleteAddressBtn = $('<button type="button" class="btn btn-danger btn-sm col-5 mx-auto" id = "address-delete-btn">Delete</button>');
-newRow.append($('<td class="col-2"></td>').append(confirmAddressBtn).append($('<span></span>').css('width', '10px')).append(deleteAddressBtn).css('margin-left', '10px'));
-//var cell8 = $('<td class="col-2"><button type="button" class="btn btn-primary btn-sm col-5 mx-auto" id = "edit-btn">Edit</button><button type="button" class="btn btn-danger btn-sm col-5 mx-auto" id = "delete-btn">Delete</button></td>');
-
-  // 在表格最后添加新行
-  $('#example tbody').append(newRow);
-});
-
     $("#save-btn").click(function() {
-    // 获取表单数据
-    var id = $("#inputId").val();
-    var name = $("#inputName").val();
-    var email = $("#inputEmail").val();
-    var phone = $("#inputPhoneNumber").val();
-    var birthday = $("#inputBirth").val();
-    var role = $("#inputRole").val();
-    var state = $("#inputState").val();
-    // 获取 role 和 state 的选项值
-    var selectedRole = $("#inputRole option:selected").val();
-    var selectedState = $("#inputState option:selected").val();
-    // 使用 AJAX 发送数据到服务器端
-    $.ajax({
-        url: "save_user.php",
-        method: "POST",
-        data: {
-            id: id,
-            name: name,
-            email: email,
-            phone: phone,
-            birthday: birthday,
-            role: selectedRole,
-            state: selectedState
-        },
-        success: function(response) {
-            console.log(response);
-            alert("Data saved successfully!");
-        },
-        error: function(xhr, status, error) {
-            console.log(error);
-            alert("An error occurred while saving data. Please try again later.");
-        }
+        // 获取表单数据
+        var id = $("#inputId").val();
+        var name = $("#inputName").val();
+        var email = $("#inputEmail").val();
+        var phone = $("#inputPhoneNumber").val();
+        var birthday = $("#inputBirth").val();
+        var role = $("#inputRole").val();
+         var state = $("#inputState").val();
+        // 获取 role 和 state 的选项值
+        var selectedRole = $("#inputRole option:selected").val();
+        var selectedState = $("#inputState option:selected").val();
+        // 使用 AJAX 发送数据到服务器端
+        $.ajax({
+                url: "save_user.php",
+                method: "POST",
+                data: {
+                        id: id,
+                        name: name,
+                        email: email,
+                        phone: phone,
+                        birthday: birthday,
+                        role: selectedRole,
+                        state: selectedState
+                },
+                success: function(response) {
+                        console.log(response);
+                        alert("Data saved successfully!");
+                },
+                error: function(xhr, status, error) {
+                        console.log(error);
+                        alert("An error occurred while saving data. Please try again later.");
+                }
+        });
+     });
+     $(".address-delete-btn").click(function () {
+      console.log($(this).closest('.table_address_row').find(".address_id").text())
+      delete_address($(this).closest('.table_address_row').find(".address_id").text());
+    });
+    $(".payment-delete-btn").click(function () {
+      console.log($(this).closest('.table_payment_row').find(".payment_id").text())
+      delete_payment($(this).closest('.table_payment_row').find(".payment_id").text());
+    });
+    $(".address-delete-all-btn").click(function() {
+    // Get all checked checkboxes
+    var checkboxes = $("input.form-check-input:checked");
+
+    // Show confirmation dialog
+    if (!confirm("Are you sure you want to delete selected users?")) {
+        return;                         
+    }
+
+    // Iterate over the checkboxes
+    checkboxes.each(function() {
+        var tr = $(this).closest("table_address_row");
+        var id = tr.find(".address_id").text(); // Assume ID is in the 2nd column
+        $.ajax({
+                url: "api/category/delete_address.php",
+                type: "POST",
+                data: JSON.stringify(values),
+        })
+        .done(function(data) {
+                alert("success" + data);
+                location.reload(true);
+        })
+        .fail(function(data) {
+                alert("failure" + data);
+        });
     });
 });
-
-
+    //$('#countrypicker').countrypicker();
   });
 
+  function add_new_payment(){
+    $("#new_payment_input_tr").show();
+    if(is_show_payment) {
+      $("#new_payment_input_tr").hide();
+    } else {
+      $("#new_payment_input_tr").show();
+    }
+    is_show_payment = !is_show_payment;
+  }
+
+  function add_new_address(){
+    $("#new_address_input_tr").show();
+    if(is_show_address) {
+      $("#new_address_input_tr").hide();
+    } else {
+      $("#new_address_input_tr").show();
+    }
+    is_show_address = !is_show_address;
+  }
+
+  function submit_new_address() {
+   const values = {
+    'id': document.getElementById("address_id").innerHTML.trim(),
+    'phone': '<?php echo $user_info["phone"] ?>',
+    'user_id': '<?php echo $user_info["id"] ?>',
+    'addressee': '<?php echo $user_info["name"] ?>',
+    'address': $("#address_input").val(),
+    'country': $("#country_input option:selected").val(),
+    'is_default': $("#address_is_default_input").prop("checked")
+        };
+        console.log(JSON.stringify(values))
+        $.ajax({
+    url: "api/category/add_address.php",
+    type: "POST",
+    data: JSON.stringify(values),
+    contentType: "application/json",
+        })
+        .done(function(data) {
+        alert("success" + data);
+        location.reload(true);
+        })
+        .fail(function(data) {
+         alert("failure" + data);
+        });
+  }
+
+function submit_new_payment() {
+  const values = {
+    'id': document.getElementById("payment_id").innerHTML.trim(),
+    'platform': $("#platform_input option:selected").val(),
+    'account': '<?php echo $user_info["name"] ?>',
+    'is_default': $("#payment_is_default_input").prop("checked"),
+    'user_id': '<?php echo $user_info["id"] ?>'
+  };
+  console.log(JSON.stringify(values))
+  $.ajax({
+    url: "api/category/add_payment.php",
+    type: "POST",
+    data: JSON.stringify(values),
+    contentType: "application/json",
+  })
+  .done(function(data) {
+    alert("success" + data);
+    location.reload(true);
+  })
+  .fail(function(data) {
+    alert("failure" + data);
+  });
+}
+
+function delete_address(id){
+    const values = {
+      'id': id,
+    };
+    console.log(JSON.stringify(values))
+    $.ajax({
+      url: "api/category/delete_address.php",
+      type: "POST",
+      data: JSON.stringify(values),
+    })
+        .done(function(data) {
+          alert("success" + data);
+          location.reload(true);
+        })
+        .fail(function(data) {
+          alert("failure" + data);
+        });
+}
+
+function delete_payment(id){
+    const values = {
+      'id': id,
+    };
+    console.log(JSON.stringify(values))
+    $.ajax({
+      url: "api/category/delete_payment.php",
+      type: "POST",
+      data: JSON.stringify(values),
+    })
+        .done(function(data) {
+          alert("success" + data);
+          location.reload(true);
+        })
+        .fail(function(data) {
+          alert("failure" + data);
+        });
+}
 
 </script>
 </body>
