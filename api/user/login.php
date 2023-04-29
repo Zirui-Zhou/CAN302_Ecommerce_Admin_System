@@ -10,7 +10,6 @@ include ("../../JWT/Key.php");
 $requestMethod = $_SERVER["REQUEST_METHOD"];
 $data = json_decode(file_get_contents('php://input'), true);
 
-var_dump($data);
 
 if(!isset($data["name"])) {
     echo "error";
@@ -37,7 +36,6 @@ $result = $pdo->query($sql)->fetch(PDO::FETCH_ASSOC);
 $hashed = hash("md5", $data["password"].$result["salt"]);
 
 if($hashed === $result["password"]) {
-    echo "In";
     $key = 'example_key';
     $payload = [
         'iss' => $result["id"],
@@ -51,7 +49,7 @@ if($hashed === $result["password"]) {
      */
     $jwt = JWT::encode($payload, $key, 'HS256');
 //    $decoded = JWT::decode($jwt, new Key($key, 'HS256'));
-
+    echo $jwt;
 
 //    print_r($decoded);
 
@@ -75,5 +73,6 @@ if($hashed === $result["password"]) {
 } else {
     echo "Wrong password";
 }
+
 
 //echo json_encode($result);

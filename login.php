@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -11,7 +12,7 @@
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
         <script src="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.13.4/datatables.min.js"></script>
     </head>
-    <body class="bg-primary" >
+    <body class="bg-login" >
         <div id="layoutAuthentication">
             <div id="layoutAuthentication_content">
                 <main>
@@ -19,11 +20,11 @@
                         <div class="row justify-content-center">
                             <div class="col-lg-5">
                                 <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Ellen's Store Management System</h3></div>
+                                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Ellen's Store Manage System</h3></div>
                                     <div class="card-body">
                                         <form id="login-form">
                                             <div class="form-floating mb-3">
-                                                <input class="form-control" id="inputEmail" type="email" placeholder="name@example.com" />
+                                                <input class="form-control" id="inputEmail" placeholder="name@example.com" />
                                                 <label for="inputEmail">Username</label>
                                             </div>
                                             <div class="form-floating mb-3">
@@ -38,6 +39,9 @@
                                                 <button class="btn btn-primary login-btn" >Login</button>
                                             </div>
                                         </form>
+                                    </div>
+                                    <div class="card-footer text-center py-3">
+                                        <div class="small"><a href="register.html">Need an account? Sign up!</a></div>
                                     </div>
                                 </div>
                             </div>
@@ -61,16 +65,16 @@
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-        <script src="js/scripts.js"></script>
-    <script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+        <script  type="module">
         $(document).ready(function () {
             $(".login-btn").click(function () {
                 const name = $(this).closest('#login-form').find("#inputEmail").val()
                 const password = $(this).closest('#login-form').find("#inputPassword").val()
                 login(name, password);
+                getUserInfo();
             });
         });
-
         function login(name, password) {
             const values = {
                 'name': name,
@@ -83,12 +87,38 @@
             })
                 .done(function(data) {
                     alert("success" + data);
+                    console.log("#"+data);
+                    Cookies.set('token', data);
                 })
                 .fail(function(data) {
                     alert("failure" + data);
                 });
         }
 
+            function getUserInfo() {
+                const values = {
+                    'key': 123,
+                };
+                $.ajax({
+                        data: JSON.stringify(values),
+                        headers: {
+                            "token": Cookies.get('token')//此处放置请求到的用户token
+                        },
+                        type: "POST",
+                        url: "api/user/token.php",//请求url
+                    })
+                    .done(function(data) {
+                        if (data.trim() === "SUCCESS") {
+                            window.location.href="index.html"
+                        } else {
+                            alert("请求错误！错误信息：" + data);
+                        }
+                    })
+                    .fail(function(data) {
+                        this.loginLoading = false;
+                        alert("错误信息：" + JSON.stringify(data))
+                    })
+                }
     </script>
     </body>
 </html>
