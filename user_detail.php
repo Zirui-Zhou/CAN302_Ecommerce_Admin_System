@@ -267,9 +267,7 @@
 
                 </td>
                 <td class="col-2">
-                  <button type="button" class="btn btn-primary btn-sm col-5 mx-auto" id = "address-edit-btn">
-                    Edit
-                  </button>
+                  
                   <button type="button" class="btn btn-danger btn-sm col-5 mx-auto address-delete-btn" >
                     Delete
                   </button>
@@ -435,9 +433,7 @@
 
                 </td>
                 <td class="col-2">
-                  <button type="button" class="btn btn-primary btn-sm col-5 mx-auto" id = "edit-btn">
-                    Edit
-                  </button>
+                  
                   <button type="button" class="btn btn-danger btn-sm col-5 mx-auto payment-delete-btn">
                     Delete
                   </button>
