@@ -110,6 +110,40 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="js/scripts.js"></script>
+        <script>
+            $("#register-btn").click(function(event) {
+            event.preventDefault();
+            var phone = $("#phone").val();
+            var name = $("#inputFirstName").val();
+            var email = $("#inputEmail").val();
+            var password = $("#inputPassword").val();
+            var role = $("#inpuRole").val();
+            var birthday = $("#inputBirthday").val();
 
+            $.ajax({
+                url: "save_register.php",
+                method: "POST",
+                data: {
+                    name: name,
+                    role: role,
+                    email: email,
+                    password: password,
+                    phone: phone,
+                    birthday: birthday,
+
+                },
+                success: function(response) {
+                    console.log(response);
+                    alert("Data saved successfully!");
+                    window.location.href = "login.html";
+                },
+                
+                error: function(xhr, status, error) {
+                    console.log(error);
+                    alert("An error occurred while saving data. Please try again later.");
+                }
+            });
+        });
+        </script>
     </body>
 </html>
