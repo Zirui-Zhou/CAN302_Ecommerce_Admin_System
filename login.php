@@ -112,7 +112,7 @@
                     if (data.trim() === "SUCCESS") {
                         window.location.href="index.html"
                     } else {
-                        alert("Opps! There are something wrong.. (X_X) "+data);
+                        alert("Opps! There are something wrong.. (X_X) ");
                     }
                 })
                 .fail(function(data) {

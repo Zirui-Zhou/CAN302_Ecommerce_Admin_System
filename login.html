@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -9,6 +10,7 @@
         <title>Login-Admin</title>
         <link href="css/styles.css" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.13.4/datatables.min.js"></script>
     </head>
     <body class="bg-login" >
         <div id="layoutAuthentication">
@@ -20,10 +22,10 @@
                                 <div class="card shadow-lg border-0 rounded-lg mt-5">
                                     <div class="card-header"><h3 class="text-center font-weight-light my-4">Ellen's Store Manage System</h3></div>
                                     <div class="card-body">
-                                        <form>
+                                        <form id="login-form">
                                             <div class="form-floating mb-3">
-                                                <input class="form-control" id="inputEmail" type="email" placeholder="name@example.com" />
-                                                <label for="inputEmail">Administrator</label>
+                                                <input class="form-control" id="inputEmail" placeholder="name@example.com" />
+                                                <label for="inputEmail">Username</label>
                                             </div>
                                             <div class="form-floating mb-3">
                                                 <input class="form-control" id="inputPassword" type="password" placeholder="Password" />
@@ -34,7 +36,7 @@
                                                 <label class="form-check-label" for="inputRememberPassword">Remember Password</label>
                                             </div>
                                             <div class=" mt-4 mb-0" style="text-align: right">
-                                                <a class="btn btn-primary" href="index.html">Login</a>
+                                                <button class="btn btn-primary login-btn" >Login</button>
                                             </div>
                                         </form>
                                     </div>
@@ -63,41 +65,61 @@
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-        <script src="js/scripts.js"></script>
-    <script>
-        import axios from "axios";
-        import cookie from 'js-cookie'
-        const service = axios.create({
-            baseURL: 'http://ycrzjn .natappfree.cc',
-            timeout: 5000
-        })
-       function submitLogin(){
-                login.submitLogin(this.user).then(res => {
-                    Cookie.set('guli_token', res.data.data.token, {domain: ' localhost'})//调用接口发送请求获取用户数据
-                    login.getLoginUserInfo().then(res => {
-                        // 存储返回的用户数据
-                        this.loginInfo = res.data.data.userInfo
-                        //Cookie存储用户数据到token
-                        //第一个参数存储的token名，第二个参数，将服务器返回的用户数据转为Json字符串存储
-                        //第三个参数 作用域
-                        Cookie.set('guli_ucenter', JSON.stringify(this.loginInfo), {domain: 'localhost'})
-                    })
-                    this.$router.push('/')
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+        <script  type="module">
+        $(document).ready(function () {
+            $(".login-btn").click(function () {
+                const name = $(this).closest('#login-form').find("#inputEmail").val()
+                const password = $(this).closest('#login-form').find("#inputPassword").val()
+                login(name, password);
+            });
+        });
+        function login(name, password) {
+            const values = {
+                'name': name,
+                'password': password,
+            };
+            $.ajax({
+                url: "api/user/login.php",
+                type: "POST",
+                async: false,
+                data: JSON.stringify(values),
+            })
+                .done(function(data) {
+                    if (data.trim() === "Wrong password") {
+                        alert("Input error. Please try it again!");
+                    } else if (data.trim() === "Empty") {
+                        alert("The field cannot be empty");
+                    } else {
+                        console.log("#" + data);
+                        Cookies.set('token', data);
+                        showUserInfo();
+                    }
+                })
+                .fail(function(data) {
+                    alert("Opps! There are something wrong.. (X_X) ");
+                });
+        }
+        function showUserInfo(){
+            $.ajax({
+                headers: {
+                    "token": Cookies.get('token')//此处放置请求到的用户token
+                },
+                type: "POST",
+                url: "api/user/token.php",//请求url
+            })
+                .done(function(data) {
+                    if (data.trim() === "SUCCESS") {
+                        window.location.href="index.html"
+                    } else {
+                        alert("Opps! There are something wrong.. (X_X) "+data);
+                    }
+                })
+                .fail(function(data) {
+                    this.loginLoading = false;
+                    alert("Opps! There are something wrong.. (X_X) ");
                 })
         }
-        service.interceptors.request.use(
-            config => {
-            //如果token中存在名为guli_token的值，就把这个token添加到请求头中
-                if (cookie.get('guli_token')) {
-                    config.headers['token'] = cookie.get('guli_token');
-                }
-                return config
-            },
-            err => {
-                return Promise.reject(err);
-            }
-        )
-        export default service
     </script>
     </body>
 </html>
