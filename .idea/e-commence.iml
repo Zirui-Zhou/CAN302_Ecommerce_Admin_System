@@ -16,9 +16,5 @@
     <orderEntry type="library" name="@popperjs" level="application" />
     <orderEntry type="library" name="jquery-3.6.4" level="application" />
     <orderEntry type="library" name="bootstrap-select-country" level="application" />
-    <orderEntry type="library" name="all" level="application" />
-    <orderEntry type="library" name="datatables" level="application" />
-    <orderEntry type="library" name="bootstrap-icons" level="application" />
-    <orderEntry type="library" name="bootstrap" level="application" />
   </component>
 </module>

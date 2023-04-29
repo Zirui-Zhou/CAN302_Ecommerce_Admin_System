@@ -11,13 +11,13 @@ $requestMethod = $_SERVER["REQUEST_METHOD"];
 $data = json_decode(file_get_contents('php://input'), true);
 
 
-if(!isset($data["name"])) {
-    echo "error";
+if(empty($data["name"])) {
+    echo "Empty";
     exit();
 }
 
-if(!isset($data["password"])) {
-    echo "error";
+if(empty($data["password"])) {
+    echo "Empty";
     exit();
 }
 

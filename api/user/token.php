@@ -23,7 +23,6 @@ include ("../../JWT/Key.php");
 //    echo $token;
 //}
 //
-
 $token = getallheaders()["Token"];
 $key = 'example_key';
 $decoded = JWT::decode($token, new Key($key, 'HS256'));

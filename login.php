@@ -72,7 +72,6 @@
                 const name = $(this).closest('#login-form').find("#inputEmail").val()
                 const password = $(this).closest('#login-form').find("#inputPassword").val()
                 login(name, password);
-                getUserInfo();
             });
         });
         function login(name, password) {
@@ -83,42 +82,44 @@
             $.ajax({
                 url: "api/user/login.php",
                 type: "POST",
+                async: false,
                 data: JSON.stringify(values),
             })
                 .done(function(data) {
-                    alert("success" + data);
-                    console.log("#"+data);
-                    Cookies.set('token', data);
+                    if (data.trim() === "Wrong password") {
+                        alert("Input error. Please try it again!");
+                    } else if (data.trim() === "Empty") {
+                        alert("The field cannot be empty");
+                    } else {
+                        console.log("#" + data);
+                        Cookies.set('token', data);
+                        showUserInfo();
+                    }
                 })
                 .fail(function(data) {
-                    alert("failure" + data);
+                    alert("Opps! There are something wrong.. (X_X) ");
                 });
         }
-
-            function getUserInfo() {
-                const values = {
-                    'key': 123,
-                };
-                $.ajax({
-                        data: JSON.stringify(values),
-                        headers: {
-                            "token": Cookies.get('token')//此处放置请求到的用户token
-                        },
-                        type: "POST",
-                        url: "api/user/token.php",//请求url
-                    })
-                    .done(function(data) {
-                        if (data.trim() === "SUCCESS") {
-                            window.location.href="index.html"
-                        } else {
-                            alert("请求错误！错误信息：" + data);
-                        }
-                    })
-                    .fail(function(data) {
-                        this.loginLoading = false;
-                        alert("错误信息：" + JSON.stringify(data))
-                    })
-                }
+        function showUserInfo(){
+            $.ajax({
+                headers: {
+                    "token": Cookies.get('token')//此处放置请求到的用户token
+                },
+                type: "POST",
+                url: "api/user/token.php",//请求url
+            })
+                .done(function(data) {
+                    if (data.trim() === "SUCCESS") {
+                        window.location.href="index.html"
+                    } else {
+                        alert("Opps! There are something wrong.. (X_X) "+data);
+                    }
+                })
+                .fail(function(data) {
+                    this.loginLoading = false;
+                    alert("Opps! There are something wrong.. (X_X) ");
+                })
+        }
     </script>
     </body>
 </html>
