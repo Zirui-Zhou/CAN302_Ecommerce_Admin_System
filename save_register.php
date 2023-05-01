@@ -6,21 +6,29 @@
 
     $pdo = new PDO($dsn, $username, $password);
 
+    $salt = random_bytes(32);
+    $encoded_salt = base64_encode($salt);
+
     $id = uuid::v4();
+
     $email = $_POST["email"];
     $password = $_POST["password"];
     $phone = $_POST["phone"];
-    $role = $_POST["role"];
-    $role_options = array("1" => "Option 1", "2" => "Option 2");
+
+    
+    $role = 2;
+
     $name = $_POST["name"];
     $birthday = $_POST["birthday"];
 
-    $stmt = $pdo->prepare("INSERT INTO user (id, name, password, role) VALUES (:id, :name, :password, :role)");
+    $hashed_password = md5($password . $salt);
+    $stmt = $pdo->prepare("INSERT INTO user (id, name, password, salt, role) VALUES (:id, :name, :password,:salt, :role)");
     
     $stmt->bindParam(':id', $id);
     $stmt->bindParam(':name', $name);
-    $stmt->bindParam(':password', $password);
-    $stmt->bindParam(':role', $role_option); 
+    $stmt->bindParam(':password', $hashed_password);
+    $stmt->bindParam(':role', $role); 
+    $stmt->bindParam(':salt', $encoded_salt);
 
     if ($stmt->execute()) {
         echo "Data saved successfully!";
@@ -35,15 +43,11 @@
     $stmt2->bindParam(':birthday', $birthday); 
 
     if ($stmt2->execute()) {
-        echo "Data saved successfully!";
+        echo "User info saved successfully!";
     } else {
         echo "An error occurred while saving data. Please try again later.";
     }
-    
-    
 ?>
-
-
 
 
 
