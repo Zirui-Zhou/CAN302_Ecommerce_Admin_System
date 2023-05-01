@@ -97,6 +97,7 @@
                     }
                 })
                 .fail(function(data) {
+                    console.log(1);
                     alert("Opps! There are something wrong.. (X_X) ");
                 });
         }
@@ -109,14 +110,16 @@
                 url: "api/user/token.php",//请求url
             })
                 .done(function(data) {
-                    if (data.trim() === "SUCCESS") {
-                        window.location.href="index.html"
-                    } else {
+                    if (data.trim() === "Error") {
+                        console.log(2);
                         alert("Opps! There are something wrong.. (X_X) ");
+                    } else {
+                        window.location.href="index.html"
                     }
                 })
                 .fail(function(data) {
                     this.loginLoading = false;
+                    console.log(3);
                     alert("Opps! There are something wrong.. (X_X) ");
                 })
         }
