@@ -4,9 +4,6 @@
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-include ("../../JWT/JWT.php");
-include ("../../JWT/Key.php");
-
 $requestMethod = $_SERVER["REQUEST_METHOD"];
 $data = json_decode(file_get_contents('php://input'), true);
 

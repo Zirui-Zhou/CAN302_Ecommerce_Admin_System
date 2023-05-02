@@ -6,17 +6,20 @@ include("../../config.php");
 $requestMethod = $_SERVER["REQUEST_METHOD"];
 $data = json_decode(file_get_contents('php://input'), true);
 
-var_dump($data);
-
-if(!isset($data["id"])) {
+if(!isset($data["user_id"])) {
     echo "error";
     exit();
 }
 
 $sql = "
-    DELETE FROM category WHERE id='{$data["id"]}'
+    SELECT 
+    id, addressee, phone, country, address, is_default
+    FROM address
+    WHERE user_id='{$data["user_id"]}'
 ";
 
-$result = $pdo->query($sql);
+$stmt = $pdo->prepare($sql);
+$stmt->execute();
+$result = $stmt->fetchALl();
 
 echo json_encode($result);
