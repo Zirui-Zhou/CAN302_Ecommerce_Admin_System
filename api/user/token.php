@@ -29,15 +29,15 @@ $decoded = JWT::decode($token, new Key($key, 'HS256'));
 $pdo = new PDO("mysql:host=localhost:3306;dbname=can302_ass1", "root", null);
 $sql = "
     SELECT
-    id
+    id, name
     FROM user
     where id='{$decoded->iss}'
 ";
 $result = $pdo->query($sql)->fetch(PDO::FETCH_ASSOC);
 if($result["id"]){
-   echo "SUCCESS";
+   echo $result["name"];
 }else{
-    echo "Erro";
+    echo "Error";
 }
 //        //如果当前时间大于或等于数据库保存的登录时间，则返回登录过期信息
 //if(empty($result)){
