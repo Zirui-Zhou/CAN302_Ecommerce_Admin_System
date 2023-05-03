@@ -24,32 +24,16 @@
                                     <form action="save_register.php" method="post">
                                         
                                     <div class="form-floating mb-3">
-                                                        <input class="form-control" id="inputFirstName" name="first_name" type="text" placeholder="Enter your first name" />
-                                                        <label for="inputFirstName">Name</label>
-                                                    </div>
+                                            <input class="form-control" id="inputFirstName" name="first_name" type="text" placeholder="Enter your first name" />
+                                            <label for="inputFirstName">Name</label>
+                                    </div>
                                                 
-                                        <div class="row mb-3">
-                                            <div class="col-md-6">   
-                                                <div class="form-floating mb-3 mb-md-0">
-                                                    <input class="form-control" id="inputEmail" name="email" type="email" placeholder="name@example.com" />
-                                                    <label for="inputEmail">Email address</label>
-                                                </div>
-                                            </div>    
-                                            <div class="col-md-6">
-                                                <label for="role">Role:</label>
-                                                <div class="form-floating mb-3  float-md-start">
-                                                    <br>
-                                                    <select id="role" name="role">
-                                                        <option value="1">1:admin</option>
-                                                        <option value="2">2:client</option>
-                                                        <?php foreach ($role_options as $value => $text): ?>
-                                                            <option value="<?php echo $value ?>"><?php echo $text ?></option>
-                                                        <?php endforeach; ?>
-                                                    </select>
-                                                    <br>
-                                                </div>
-                                            </div>
+                                          
+                                        <div class="form-floating mb-3 ">
+                                                <input class="form-control" id="inputEmail" name="email" type="email" placeholder="name@example.com" />
+                                                <label for="inputEmail">Email address</label>
                                         </div>
+                                           
                                         <div class="row mb-3">
                                          <div class="col-md-6">
                                                     <div class="form-floating mb-3">
@@ -85,7 +69,7 @@
                                     </form>
                                     </div>
                                     <div class="card-footer text-center py-3">
-                                        <div class="small"><a href="login.html">Have an account? Go to login</a></div>
+                                        <div class="small"><a href="login.php">Have an account? Go to login</a></div>
                                     </div>
                                 </div>
                             </div>
@@ -112,39 +96,51 @@
         <script src="js/scripts.js"></script>
 
         <script>
-            $("#register-btn").click(function(event) {
-            event.preventDefault();
-            var phone = $("#phone").val();
-            var name = $("#inputFirstName").val();
-            var email = $("#inputEmail").val();
-            var password = $("#inputPassword").val();
-            var role = $("#inpuRole").val();
-            var birthday = $("#inputBirthday").val();
+          $(document).ready(function() {
 
-            $.ajax({
-                url: "save_register.php",
-                method: "POST",
-                data: {
-                    name: name,
-                    role: role,
-                    email: email,
-                    password: password,
-                    phone: phone,
-                    birthday: birthday,
+            $("form").submit(function(event) {
 
-                },
-                success: function(response) {
-                    console.log(response);
-                    alert("Data saved successfully!");
-                    window.location.href = "login.html";
-                },
-                
-                error: function(xhr, status, error) {
-                    console.log(error);
-                    alert("An error occurred while saving data. Please try again later.");
-                }
+              event.preventDefault();
+
+
+              var password = $("#inputPassword").val();
+              var passwordConfirm = $("#inputPasswordConfirm").val();
+              var phone = $("#phone").val();
+              var name = $("#inputFirstName").val();
+              var email = $("#inputEmail").val();
+              var birthday = $("#inputBirthday").val();
+
+              if (password !== passwordConfirm) {
+                alert("Password and confirm password do not match!");
+                return;
+              }else{
+                $.ajax({
+                        url: "save_register.php",
+                        method: "POST",
+                        data: {
+                            name: name,
+                            email: email,
+                            password: password,
+                            phone: phone,
+                            birthday: birthday,
+
+                        },
+                        success: function(response) {
+                            console.log(response);
+                            alert("Data saved successfully!");
+                            window.location.href = "login.php";
+                        },
+
+                        error: function(xhr, status, error) {
+                            console.log(error);
+                            alert("An error occurred while saving data. Please try again later.");
+                        }
+                     });
+              }
+
+              // $(this).unbind("submit").submit();
             });
-        });
+          });
         </script>
 </body>
 </html>

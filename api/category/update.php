@@ -13,8 +13,21 @@ if(!isset($data["id"])) {
     exit();
 }
 
+if(!isset($data["name"])) {
+    echo "error";
+    exit();
+}
+
+if(!isset($data["desc"])) {
+    echo "error";
+    exit();
+}
+
 $sql = "
-    DELETE FROM category WHERE id='{$data["id"]}'
+        UPDATE category
+        SET name='{$data["name"]}',
+            description='{$data["desc"]}'
+        WHERE id='{$data["id"]}'
 ";
 
 $result = $pdo->query($sql);

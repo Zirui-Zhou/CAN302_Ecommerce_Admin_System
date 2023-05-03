@@ -28,7 +28,7 @@ $user_info = $stmt->fetch(PDO::FETCH_ASSOC);
 
 $stmt = $pdo->prepare("
     select
-        id, addressee, phone, country, address
+        id, addressee, phone, country, address, is_default
     from address
     where id = '{$order_info["address_id"]}'
 ");
@@ -43,19 +43,6 @@ $stmt = $pdo->prepare("
 ");
 $stmt->execute();
 $payment = $stmt->fetch(PDO::FETCH_ASSOC);
-
-$stmt = $pdo->prepare("
-    select
-        p.id as id, p.name as name, p.image_url as image_url,
-        c.name as category, p.price as price, p.price_unit as price_unit,
-        op.number as number
-    from order_product_list op 
-        left join product p on op.product_id = p.id
-        left join category c on p.category = c.id
-    where order_id = '{$order_info["id"]}'
-");
-$stmt->execute();
-$product_list = $stmt->fetchAll();
 
 
 require_once ("utils.php");
@@ -75,26 +62,7 @@ $payment_platform = getPaymentPlatformList();
   <meta name="author" content="" />
   <title>Charts - SB Admin</title>
 
-  <link href="css/styles.css" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-  <link href="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.13.4/datatables.min.css" rel="stylesheet"/>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.13.4/datatables.min.js"></script>
-  <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-  <script src="js/scripts.js"></script>
-
-  <!-- Latest compiled and minified CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/css/bootstrap-select.min.css">
-
-  <!-- Latest compiled and minified JavaScript -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/js/bootstrap-select.min.js"></script>
-
-  <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@6.6.6/css/flag-icons.min.css"
-  />
+  <?php require ("dependency.php") ?>
 
 </head>
 <body class="sb-nav-fixed">
@@ -143,7 +111,7 @@ $payment_platform = getPaymentPlatformList();
                   <div class="col-sm-7">
 
 
-                    <select class="selectpicker" id="inputRole">
+                    <select class="selectpicker" id="order_state_input">
                       <?php
                       foreach ($order_state as $key=>$value) {
                         $selected = $key===$order_info["state"] ? "selected" : "";
@@ -173,6 +141,7 @@ $payment_platform = getPaymentPlatformList();
                       <input
                           class="form-control"
                           type="datetime-local"
+                          id="order_time_input"
                           value="<?php echo $order_info["payment_time"] ?>"
                       >
                     </div>
@@ -188,14 +157,14 @@ $payment_platform = getPaymentPlatformList();
               <div class="col col-8">
                 <div class="row">
                   <label
-                      for="inputRemark"
+                      for="order_remark_input"
                       class="col-sm-2 col-form-label">
                     Remark:
                   </label>
                   <div class="col-sm-9">
                     <textarea
                         class="form-control"
-                        id="inputRemark"
+                        id="order_remark_input"
                         style="resize: none"
                         rows="3"><?php
                       echo $order_info["remark"]
@@ -220,7 +189,7 @@ $payment_platform = getPaymentPlatformList();
 
 
                         <label
-                            for="inputId"
+                            for="user_id_input"
                             class="col-sm-2 col-form-label"
                         >
                           ID:
@@ -228,7 +197,7 @@ $payment_platform = getPaymentPlatformList();
                         <div class="col-sm-10">
                           <input
                               class="form-control"
-                              id="inputId"
+                              id="user_id_input"
                               value="<?php echo $user_info["id"] ?>"
                           >
                         </div>
@@ -240,11 +209,11 @@ $payment_platform = getPaymentPlatformList();
 
                   <div class="col">
                     <div class="row">
-                      <label for="inputName" class="col-sm-4 col-form-label">Name:</label>
+                      <label for="user_name_input" class="col-sm-4 col-form-label">Name:</label>
                       <div class="col-sm-8">
                         <input
                             class="form-control"
-                            id="inputName"
+                            id="user_name_input"
                             value="<?php echo $user_info["name"] ?>"
                             disabled
                         >
@@ -253,12 +222,12 @@ $payment_platform = getPaymentPlatformList();
                   </div>
                   <div class="col">
                     <div class="row">
-                      <label for="inputPhoneNumber" class="col-sm-4 col-form-label">Phone:</label>
+                      <label for="user_phone_input" class="col-sm-4 col-form-label">Phone:</label>
                       <div class="col-sm-8">
                         <input
                                 class="form-control"
                                 type="tel"
-                                id="inputPhoneNumber"
+                                id="user_phone_input"
                                 name="phone"
                                 pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}"
                                 value="<?php echo $user_info["phone"] ?>"
@@ -273,7 +242,7 @@ $payment_platform = getPaymentPlatformList();
 
               <div class="col col-4 d-flex justify-content-evenly" style="flex-direction: column">
                   <div class="row d-flex justify-content-evenly">
-                    <button type="button" class="btn btn-secondary col-4">
+                    <button type="button" class="btn btn-secondary col-4 user_check_btn">
                       <i class="bi bi-arrow-clockwise"></i>
                       Check
                     </button>
@@ -288,11 +257,11 @@ $payment_platform = getPaymentPlatformList();
             <div class="row mt-3 ">
               <div class="col col-4">
                 <div class="row">
-                  <label for="inputAmount" class="col-sm-4 col-form-label">State:</label>
+                  <label for="user_state_input" class="col-sm-4 col-form-label">State:</label>
                   <div class="col-sm-8">
 
 
-                    <select class="selectpicker" id="inputRole" disabled>
+                    <select class="selectpicker col-sm-12" id="user_state_input" disabled>
                       <?php
                       foreach ($user_state as $key=>$value) {
                         $selected = $key===$user_info["state"] ? "selected" : "";
@@ -313,11 +282,11 @@ $payment_platform = getPaymentPlatformList();
               </div>
               <div class="col col-8">
               <div class="row">
-                <label for="inputEmail" class="col-sm-2 col-form-label">Email:</label>
+                <label for="user_email_input" class="col-sm-2 col-form-label">Email:</label>
                 <div class="col-sm-10">
                   <input
                       class="form-control"
-                      id="inputEmail"
+                      id="user_email_input"
                       type="email"
                       value="<?php echo $user_info["email"] ?>"
                       onblur="reportValidity()"
@@ -337,39 +306,37 @@ $payment_platform = getPaymentPlatformList();
           </div>
           <div class="card-body">
             <div class="row">
-              <div class="col col-8">
+              <div class="col  col-8">
                 <div class="row mb-3">
 
                   <label
-                      for="inputId"
+                      for="address_id_input"
                       class="col-sm-2 col-form-label"
                   >
                     ID:
                   </label>
-                  <div class="col-sm-10">
-                    <input
-                        class="form-control"
-                        id="inputId"
-                        value="<?php echo $address["id"] ?>"
-                    >
-                  </div>
-
+                  <select
+                      class="selectpicker col-sm-10"
+                      id="address_id_input"
+                  >
+                  </select>
 
 
                 </div>
+              </div>
+                <div class="col  col-12">
                 <div class="row">
-
                   <div class="col">
                     <div class="row">
                       <label
-                          for="inputName"
+                          for="address_addressee_input"
                           class="col-sm-4 col-form-label">
                         Addressee:
                       </label>
                       <div class="col-sm-8">
                         <input
                             class="form-control"
-                            id="inputName"
+                            id="address_addressee_input"
                             value="<?php echo $address["addressee"] ?>"
                             disabled
                         >
@@ -379,7 +346,7 @@ $payment_platform = getPaymentPlatformList();
                   <div class="col">
                     <div class="row">
                       <label
-                          for="inputPhoneNumber"
+                          for="address_phone_input"
                           class="col-sm-4 col-form-label">
                         Phone:
                       </label>
@@ -387,7 +354,7 @@ $payment_platform = getPaymentPlatformList();
                         <input
                             class="form-control"
                             type="tel"
-                            id="inputPhoneNumber"
+                            id="address_phone_input"
                             name="phone"
                             pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}"
                             value="<?php echo $address["phone"] ?>"
@@ -397,45 +364,47 @@ $payment_platform = getPaymentPlatformList();
                       </div>
                     </div>
                   </div>
+                  <div class="col">
+                    <div class="row">
+                      <label
+                          for="address_default_input"
+                          class="col-sm-4 col-form-label">
+                        Default:
+                      </label>
+                      <div class="col-sm-8">
+                        <input
+                            type="checkbox"
+                            id="address_default_input"
+                            data-toggle="toggle"
+                            data-width="100"
+                            data-onlabel="Yes"
+                            data-offlabel="No"
+                        >
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div
-                  class="col col-4 d-flex justify-content-evenly"
-                  style="flex-direction: column"
-              >
-                <div class="row d-flex justify-content-evenly">
-                  <button type="button" class="btn btn-secondary col-4">
-                    <i class="bi bi-arrow-clockwise"></i>
-                    Check
-                  </button>
-                  <button type="button" class="btn btn-primary col-4">
-                    <i class="bi bi-check"></i>
-                    Confirm
-                  </button>
-                </div>
-              </div>
 
             </div>
             <div class="row mt-3 ">
               <div class="col col-4">
                 <div class="row">
                   <label
-                      for="inputAmount"
+                      for="address_country_input"
                       class="col-sm-4 col-form-label">
                     Country:
                   </label>
                   <div class="col-sm-8">
 
-                    <select class="selectpicker" disabled>
+                    <select class="selectpicker col-sm-12" id="address_country_input" disabled>
                       <?php
                       foreach ($country as $key=>$value) {
-                        $selected = $key===$address["country"] ? "selected" : "";
                         $icon = strtolower($key);
                         echo "
                             <option
                                 value='{$key}'
-                                {$selected}
                                 data-content='
                                     <span 
                                         class=\"fi fi-{$icon}\" 
@@ -456,12 +425,15 @@ $payment_platform = getPaymentPlatformList();
               <div class="col col-8">
                 <div class="row">
                   <label
-                      class="col-sm-2 col-form-label">
+                      for="address_address_input"
+                      class="col-sm-2 col-form-label"
+                  >
                     Address:
                   </label>
                   <div class="col-sm-10">
                     <input
                         class="form-control"
+                        id="address_address_input"
                         value="<?php echo $address["address"] ?>"
                         disabled
                     >
@@ -481,36 +453,30 @@ $payment_platform = getPaymentPlatformList();
             <div class="row">
               <div class="col col-8">
                 <div class="row mb-3">
-
                   <label
-                      for="inputId"
+                      for="payment_id_input"
                       class="col-sm-2 col-form-label"
                   >
                     ID:
                   </label>
-                  <div class="col-sm-10">
-                    <input
-                        class="form-control"
-                        id="inputId"
-                        value="<?php echo $payment["id"] ?>"
-                    >
-                  </div>
-
-
-
+                  <select
+                      class="selectpicker col-sm-10"
+                      id="payment_id_input"
+                  >
+                  </select>
                 </div>
-                <div class="row">
-
+                <div class="row  mb-3">
                   <div class="col">
                     <div class="row">
                       <label
+                          for="payment_type_input"
                           class="col-sm-4 col-form-label">
                         Type:
                       </label>
                       <div class="col-sm-8">
                         <input
+                            id="payment_type_input"
                             class="form-control"
-                            value="<?php echo $payment_platform[$payment["platform"]]->getType() ?>"
                             disabled
                         >
                       </div>
@@ -519,21 +485,22 @@ $payment_platform = getPaymentPlatformList();
                   <div class="col">
                     <div class="row">
                       <label
-                          for="inputAmount"
+                          for="payment_platform_input"
                           class="col-sm-4 col-form-label">
                         Platform:
                       </label>
-                      <div class="col-sm-8">
-
-                        <select class="selectpicker" disabled>
+                        <select
+                            id="payment_platform_input"
+                            class="selectpicker col-sm-8"
+                            disabled
+                        >
                           <?php
                           foreach ($payment_platform as $key=>$value) {
-                            $selected = $key===$payment["platform"] ? "selected" : "";
+
                             $icon = strtolower($key);
                             echo "
                             <option
                                 value='{$key}'
-                                {$selected}
                                 data-content='
                                     <i 
                                         class=\"{$value->getIcon()->getIcon()}\" 
@@ -547,27 +514,47 @@ $payment_platform = getPaymentPlatformList();
 
                         </select>
 
+
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <div class="row">
+                      <label
+                          for="payment_account_input"
+                          class="col-sm-4 col-form-label">
+                        Account:
+                      </label>
+                      <div class="col-sm-8">
+                        <input
+                            id="payment_account_input"
+                            class="form-control"
+                            disabled
+                        >
                       </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="row">
+                      <label
+                          for="payment_default_input"
+                          class="col-sm-4 col-form-label">
+                        Default:
+                      </label>
+                      <input
+                          type="checkbox"
+                          id="payment_default_input"
+                          data-toggle="toggle"
+                          data-width="100"
+                          data-onlabel="Yes"
+                          data-offlabel="No"
+                      >
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div
-                  class="col col-4 d-flex justify-content-evenly"
-                  style="flex-direction: column"
-              >
-                <div class="row d-flex justify-content-evenly">
-                  <button type="button" class="btn btn-secondary col-4">
-                    <i class="bi bi-arrow-clockwise"></i>
-                    Check
-                  </button>
-                  <button type="button" class="btn btn-primary col-4">
-                    <i class="bi bi-check"></i>
-                    Confirm
-                  </button>
-                </div>
-              </div>
 
             </div>
             <hr>
@@ -580,6 +567,7 @@ $payment_platform = getPaymentPlatformList();
                   </label>
                   <div class="col-sm-8">
                     <input
+                        id="payment_amount_input"
                         class="form-control"
                         value="<?php echo $order_info["payment_amount"] ?>"
                     >
@@ -597,8 +585,8 @@ $payment_platform = getPaymentPlatformList();
             Product List
           </div>
           <div class="card-body">
-            <div class="d-flex justify-content-evenly col-3">
-              <button type="button" class="btn btn-primary col-5">
+            <div class="d-flex justify-content-evenly col-3 mb-3">
+              <button id="top_add_btn" type="button" class="btn btn-primary col-5">
                 <i class="bi bi-plus-circle"></i>
                 Add
               </button>
@@ -610,7 +598,11 @@ $payment_platform = getPaymentPlatformList();
 
             <hr/>
 
-            <table class="table table-striped" style="vertical-align: middle; text-align: center" id="example">
+            <table
+                class="table table-striped"
+                style="vertical-align: middle; text-align: center"
+                id="product_table"
+            >
               <thead>
               <tr>
                 <th ></th>
@@ -624,57 +616,6 @@ $payment_platform = getPaymentPlatformList();
                 <th class="col-2">Operation</th>
               </tr>
               </thead>
-              <tbody>
-              <?php
-              foreach ($product_list as $product) {
-              ?>
-              <tr>
-                <td >
-                  <label>
-                    <input class="form-check-input" style="" type="checkbox" value="">
-                  </label>
-                </td>
-                <td >
-                  <?php echo $product["id"] ?>
-                </td>
-                <td >
-                  <?php echo $product["name"] ?>
-                </td>
-                <td >
-                  <img
-                      src="<?php echo $product["image_url"] ?>"
-                      alt="<?php echo $product["name"] ?>"
-                      style="height: 80px"
-                  >
-                </td>
-                <td >
-                  <?php echo $product["category"] ?>
-                </td>
-                <td >
-                  <?php echo "{$product["price"]} {$product["price_unit"]}" ?>
-                </td>
-                <td >
-                  <?php echo $product["number"] ?>
-                </td>
-                <td >
-                  <?php
-                  $amount = $product["price"] * $product["number"];
-                  echo "{$amount} {$product["price_unit"]}"
-                  ?>
-                </td>
-                <td >
-                  <button type="button" class="btn btn-primary btn-sm col-5 mx-auto">
-                    Edit
-                  </button>
-                  <button type="button" class="btn btn-danger btn-sm col-5 mx-auto">
-                    Delete
-                  </button>
-                </td>
-              </tr>
-              <?php
-              }
-              ?>
-              </tbody>
             </table>
 
           </div>
@@ -687,11 +628,11 @@ $payment_platform = getPaymentPlatformList();
           </div>
           <div class="card-body">
             <div class="d-flex justify-content-evenly col-4 mx-auto" style="margin-bottom: 0">
-              <button type="button" class="btn btn-primary">
+              <button id="save_btn" type="button" class="btn btn-primary">
                 <i class="bi bi-save"></i>
                 Save Changes
               </button>
-              <button type="button" class="btn btn-secondary">
+              <button id="back_btn" type="button" class="btn btn-secondary">
                 <i class="bi bi-arrow-left"></i>
                 Back
               </button>
@@ -707,53 +648,308 @@ $payment_platform = getPaymentPlatformList();
   </div>
 </div>
 
-
+<script src="./scripts/utils/requestUtils.js"></script>
+<script src="./scripts/utils/commonUtils.js"></script>
+<script src="./scripts/api/user.js"></script>
+<script src="./scripts/api/address.js"></script>
+<script src="./scripts/api/payment.js"></script>
+<script src="./scripts/api/product.js"></script>
+<script src="./scripts/api/order.js"></script>
 <script>
-  $(document).ready(function () {
-    refresh();
-    console.log("b");
-    // const Username=showUserInfo();
-    $(".logout-btn").click(function () {
-      console.log("a");
-      logout();
-    });
-    $('#example').DataTable({
+  let address_list = []
+  let payment_list = []
+  let product_list = []
+  let product_table = null
+
+
+  $(document).ready(async function () {
+    await initialize()
+    product_table = $('#product_table').DataTable({
       searching: false,
-      ordering:  false,
+      ordering: false,
       lengthMenu: [5, 10, 20],
-      orderFixed: [ 0, "desc" ],
+      orderFixed: [0, "desc"],
+      ajax: {
+        url: "api/order/get_product_list.php",
+        type: "POST",
+        data: ()=>JSON.stringify({
+          "id": getUrlParameter("id")
+        }),
+        dataSrc: function(d){
+          product_list = d
+          return d;
+        },
+        "datatype": "jsonp"
+      },
+      columns: [
+        {
+          "data": null,
+          "render": function (data, type, row, meta) {
+            return $('<input>')
+                .attr("class", "form-check-input")
+                .attr("type", "checkbox")
+                .prop("outerHTML")
+          }
+        },
+        {
+          "data": "product_id"
+        },
+        {
+          "data": "name"
+        },
+        {
+          "data": null,
+          "render": function (data, type, row, meta) {
+            // console.log(data)
+            return $('<img>')
+                .attr("src", data["image_url"])
+                .attr("alt", data["name"])
+                .attr("style", "height: 80px")
+                .prop("outerHTML")
+          }
+        },
+        {
+          "data": "category"
+        },
+        {
+          "data": null,
+          "render": function (data, type, row, meta) {
+            return `${data["price"]} ${data["price_unit"]}`
+          }
+        },
+        {
+          "data": "number"
+        },
+        {
+          "data": null,
+          "render": function (data, type, row, meta) {
+            return `${data["price"]*data["number"]} ${data["price_unit"]}`
+          }
+        },
+        {
+          "data": null,
+          "render": function (data, type, row, meta) {
+            return `
+              <td>
+                <button type="button" class="btn btn-danger btn-sm col-5 mx-auto" onclick="delete_product_item('${data['id']}')">
+                  Delete
+                </button>
+              </td>
+          `
+          }
+        },
+      ],
       columnDefs: [
         // Center align the header content of column 1
-        { className: "dt-head-center", targets: "_all" },
-        { orderable: false, targets: 0 }
+        {className: "dt-head-center", targets: "_all"},
+        {orderable: false, targets: 0}
       ]
     });
-    $('#example2').DataTable({
-      searching: false,
-      ordering:  false,
-      lengthMenu: [5, 10, 20],
-      orderFixed: [ 0, "desc" ],
-      columnDefs: [
-        // Center align the header content of column 1
-        { className: "dt-head-center", targets: "_all" },
-        { orderable: false, targets: 0 }
-      ]
-    });
-    $('#inputPhoneNumber').keyup(function(){
-      $(this).val($(this).val().replace(/(\d{3})\-?(\d{4})\-?(\d{4})/,'$1-$2-$3'))
-    });
+
+    console.log(product_table.rows().data().toArray())
+
+    $("#product_table").find("thead").after(
+        `<tbody>
+        <tr id="new_item_input_tr">
+        <td >
+        <label>
+        <input class="form-check-input" style="" type="checkbox" value="" disabled>
+    </label>
+  </td>
+    <td >
+      <div class="input-group">
+        <input type="text" class="form-control" style="text-align:center" id="new_product_id_input">
+          <div class="input-group-append">
+            <button type="button" class="btn btn-secondary" id="new_product_check_btn">
+              <i class="bi bi-arrow-clockwise"></i>
+            </button>
+          </div>
+      </div>
+
+    </td>
+    <td >
+      <input id="new_product_name_input" type="text" class="form-control name_input" disabled>
+    </td>
+    <td >
+      <img
+          id="new_product_image_input"
+          src=""
+          alt=""
+          class="img-fluid"
+          style="height: 80px"
+          disabled
+      >
+    </td>
+    <td>
+      <input type="text" id="new_product_category_input" class="form-control" disabled>
+    </td>
+    <td >
+      <input type="text" id="new_product_price_input" class="form-control" disabled>
+    </td>
+    <td >
+      <input type="number" id="new_product_number_input" min="1" class="form-control" >
+    </td>
+    <td >
+      <input type="text" id="new_product_amount_input" class="form-control" disabled>
+    </td>
+    <td>
+      <button id="new_product_confirm_btn" type="button" class="btn btn-primary btn-sm col-6 mx-auto">
+        Confirm
+      </button>
+      <button id="new_product_cancel_btn" type="button" class="btn btn-danger btn-sm col-5 mx-auto">
+        Cancel
+      </button>
+    </td>
+  </tr>
+    </tbody>`
+    )
+
+    $("#new_item_input_tr").hide();
+
+    $('.user_check_btn').click(async function () {
+      const userinfo = await search_user_by_id($("#user_id_input").val())
+      $("#user_name_input").val(userinfo["name"])
+      $("#user_phone_input").val(userinfo["phone"])
+      $("#user_state_input").val(userinfo["state"])
+      $("#user_email_input").val(userinfo["email"])
+
+      const address_data = await search_address_by_user_id(userinfo["id"])
+      address_list = Object.fromEntries(address_data.map(x => [x.id, x]));
+      select_change_options($("#address_id_input"), Object.keys(address_list))
+      refresh_address_info()
+
+      const payment_data = await search_payment_by_user_id(userinfo["id"])
+      payment_list = Object.fromEntries(payment_data.map(x => [x.id, x]));
+      select_change_options($("#payment_id_input"), Object.keys(payment_list))
+      refresh_payment_info()
+    })
+
+    $("#new_product_check_btn").click(async function () {
+      const product_info = await search_product_in_order_by_id($("#new_product_id_input").val())
+      refresh_new_product_info(product_info)
+    })
+
+    $("#address_id_input").on("change", function () {
+      refresh_address_info(address_list[$(this).find(":selected").val()])
+    })
+
+    $("#payment_id_input").on("change", function () {
+      refresh_payment_info(payment_list[$(this).find(":selected").val()])
+    })
+
+    $("#top_add_btn").click(function () {
+      change_elem_visible($("#new_item_input_tr"))
+    })
+
+    $("#new_product_confirm_btn").click(function () {
+      add_product(
+          getUrlParameter("id"),
+          $("#new_product_number_input").val(),
+          $("#new_product_id_input").val(),
+      )
+      change_elem_visible($("#new_item_input_tr"))
+      product_table.ajax.reload()
+    })
+
+    $("#new_product_cancel_btn").click(function () {
+      change_elem_visible($("#new_item_input_tr"))
+    })
+
+    $("#save_btn").click(function () {
+      update_order(
+          getUrlParameter("id"),
+          $("#order_state_input").val(),
+          $("#order_time_input").val(),
+          $("#order_remark_input").val(),
+          $("#user_id_input").val(),
+          $("#address_id_input").val(),
+          $("#payment_id_input").val(),
+          $("#payment_amount_input").val(),
+      )
+      location.href="order.php"
+    })
+    $("#back_btn").click(function () {
+      location.href="order.php"
+    })
   });
 
-  function refresh(){
-    console.log(Cookies.get('token'));
-    if(Cookies.get('token')==undefined){
-      window.location.href="login.php";
-    }
+  async function initialize() {
+    $('#address_default_input').bootstrapToggle();
+
+    product_list = await get_product_list(getUrlParameter("id"))
+    console.log(product_list)
+
+    const address_data = await search_address_by_user_id("<?php echo $user_info["id"] ?>")
+    address_list = Object.fromEntries(address_data.map(x => [x.id, x]));
+    select_change_options($("#address_id_input"), Object.keys(address_list), "<?php echo $address["id"] ?>")
+    refresh_address_info(address_list["<?php echo $address["id"] ?>"])
+
+    const payment_data = await search_payment_by_user_id("<?php echo $user_info["id"] ?>")
+    payment_list = Object.fromEntries(payment_data.map(x => [x.id, x]));
+    select_change_options($("#payment_id_input"), Object.keys(payment_list), "<?php echo $payment["id"] ?>")
+    refresh_payment_info(payment_list["<?php echo $payment["id"] ?>"])
   }
-  function logout(){
-    console.log("b");
-    Cookies.remove("token");
-    refresh();
+
+  function refresh_address_info(address_info=null) {
+    $("#address_id_input").val(address_info ? address_info["id"] : null)
+    $("#address_id_input").selectpicker('refresh');
+    $("#address_addressee_input").val(address_info ? address_info["addressee"] : null)
+    $("#address_phone_input").val(address_info ? address_info["phone"] : null)
+    const address_default_input = $('#address_default_input')
+    address_default_input.bootstrapToggle('enable')
+    address_default_input.bootstrapToggle(address_info!==null && address_info["is_default"] ? 'on' : 'off');
+    address_default_input.bootstrapToggle('disable')
+    $("#address_country_input").val(address_info ? address_info["country"] : null)
+    $("#address_country_input").selectpicker('refresh');
+    $("#address_address_input").val(address_info ? address_info["address"] : null)
+  }
+
+  function refresh_payment_info(payment_info=null) {
+    $("#payment_id_input").val(payment_info ? payment_info["id"] : null)
+    $("#payment_id_input").selectpicker('refresh');
+    $("#payment_type_input").val(payment_info ? payment_info["type"] : null)
+    $("#payment_platform_input").val(payment_info ? payment_info["platform"] : null)
+    $("#payment_platform_input").selectpicker('refresh');
+    $("#payment_account_input").val(payment_info ? payment_info["account"] : null)
+    const payment_default_input = $('#payment_default_input')
+    payment_default_input.bootstrapToggle('enable')
+    payment_default_input.bootstrapToggle(payment_info!==null && payment_info["is_default"] ? 'on' : 'off');
+    payment_default_input.bootstrapToggle('disable')
+  }
+
+  function refresh_new_product_info(order_info=null) {
+    $("#new_product_name_input").val(order_info ? order_info["name"] : null)
+    $("#new_product_image_input").attr("src", order_info ? order_info["image_url"] : null)
+    $("#new_product_category_input").val(order_info ? order_info["category"] : null)
+    $("#new_product_price_input").val(order_info ? order_info["price"] : null)
+    $("#new_product_number_input").val(null)
+    $("#new_product_amount_input").val(null)
+  }
+
+  function delete_product_item(id) {
+    delete_product(id)
+    product_table.ajax.reload()
+  }
+
+  function select_change_options(select, options, selected=null) {
+    select.empty();
+    options.forEach((value) => {
+      select.append(
+          `<option value="${value}">${value}</option>`
+      )
+    })
+    if(selected) {
+      select.val(selected)
+    }
+    select.selectpicker('refresh');
+  }
+
+  function change_elem_visible(elem) {
+    if(elem.is(":visible")) {
+      elem.hide();
+    } else {
+      elem.show();
+    }
   }
 
 </script>

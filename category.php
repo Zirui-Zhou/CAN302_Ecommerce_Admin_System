@@ -1,9 +1,25 @@
 <?php
-$pdo = new PDO("mysql:host=localhost:3306;dbname=can302_ass1", "root", null);
+global $pdo;
+
+include("./config.php");
+
+$search_key = "";
+$sql_search = "";
+if(isset($_GET['search'])) {
+  $search_key = $_GET['search'];
+  $sql_search = "
+    where (
+      c.id LIKE '%{$search_key}%'
+      OR c.name LIKE '%{$search_key}%'
+    )
+  ";
+}
+
 $stmt = $pdo->prepare("
   select
       c.id as id, c.name as name, description, COUNT(p.id) as count 
   from category c left join product p on c.id = p.category
+  {$sql_search}
   group by c.id
 ");
 $stmt->execute();
@@ -20,14 +36,7 @@ $category_list = $stmt->fetchAll();
   <meta name="author" content="" />
   <title>Charts - SB Admin</title>
 
-  <link href="css/styles.css" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-  <link href="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.13.4/datatables.min.css" rel="stylesheet"/>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.13.4/datatables.min.js"></script>
-  <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+  <?php require ("dependency.php")?>
 
 </head>
 <body class="sb-nav-fixed">
@@ -59,7 +68,13 @@ $category_list = $stmt->fetchAll();
                     <i class="bi bi-search"></i>
                   </span>
 
-                  <input type="text" class="form-control" placeholder="Search Categories by Name or ID" aria-describedby="basic-addon1">
+                  <input
+                      type="text"
+                      class="form-control search_input"
+                      placeholder="Search Categories by Name or ID"
+                      aria-describedby="basic-addon1"
+                      value="<?php echo $search_key ?>"
+                  >
                 </div>
               </div>
             </div>
@@ -70,11 +85,11 @@ $category_list = $stmt->fetchAll();
 
           <div class="card-body">
             <div class="d-flex justify-content-evenly col-3">
-              <button type="button" class="btn btn-primary col-5" onclick="add_new_category()">
+              <button type="button" class="btn btn-primary col-5 top_add_btn">
                 <i class="bi bi-plus-circle"></i>
                 Add
               </button>
-              <button type="button" class="btn btn-secondary col-5">
+              <button type="button" class="btn btn-secondary col-5 top_delete_btn">
                 <i class="bi bi-trash3"></i>
                 Delete
               </button>
@@ -86,9 +101,9 @@ $category_list = $stmt->fetchAll();
               <thead>
               <tr>
                 <th ></th>
-                <th >ID</th>
-                <th >Name</th>
-                <th >Description</th>
+                <th>ID</th>
+                <th class="col-2">Name</th>
+                <th class="col-2">Description</th>
                 <th >Products</th>
                 <th >Operation</th>
               </tr>
@@ -101,13 +116,13 @@ $category_list = $stmt->fetchAll();
                   </label>
                 </td>
                 <td >
-                  <input type="text" class="form-control" value="Auto Generated" disabled>
+                  <input type="text" class="form-control" style="text-align:center" value="Auto Generated" disabled>
                 </td>
                 <td >
-                  <input id="name_input" type="text" class="form-control" value="Earphone" >
+                  <input type="text" class="form-control name_input" >
                 </td>
                 <td >
-                  <textarea id="desc_input" type="text" class="form-control" style="resize: none" rows="2">Earphone</textarea>
+                  <textarea type="text" class="form-control desc_input" style="resize: none" rows="2"></textarea>
                 </td>
                 <td>
                   <button type="button" class="btn btn-primary btn-sm mx-auto" disabled>
@@ -115,11 +130,11 @@ $category_list = $stmt->fetchAll();
                   </button>
                 </td>
                 <td class="col-2">
-                  <button type="button" class="btn btn-primary btn-sm col-5 mx-auto" onclick="submit_new_category()">
+                  <button type="button" class="btn btn-primary btn-sm col-5 mx-auto new_add_btn">
                     Confirm
                   </button>
-                  <button type="button" class="btn btn-danger btn-sm col-5 mx-auto">
-                    Delete
+                  <button type="button" class="btn btn-danger btn-sm col-5 mx-auto new_cancel_btn">
+                    Cancel
                   </button>
                 </td>
               </tr>
@@ -128,18 +143,18 @@ $category_list = $stmt->fetchAll();
               ?>
               <tr class="table_item_row">
                 <td >
-                  <label>
-                    <input class="form-check-input" style="" type="checkbox" value="">
-                  </label>
+                  <input class="form-check-input item_check" type="checkbox">
                 </td>
                 <td >
-                  <span class="id-span"><?php echo $category["id"] ?></span>
+                  <span class="id_span"><?php echo $category["id"] ?></span>
                 </td>
                 <td >
-                  <?php echo $category["name"] ?>
+                  <span class="name_span"><?php echo $category["name"] ?></span>
+                  <input type="text" class="form-control name_input" value="<?php echo $category["name"] ?>">
                 </td>
                 <td >
-                  <?php echo $category["description"] ?>
+                  <span class="desc_span"><?php echo $category["description"] ?></span>
+                  <textarea type="text" class="form-control desc_input" style="resize: none" rows="2"><?php echo $category["description"] ?></textarea>
                 </td>
                 <td>
                   <button
@@ -151,11 +166,17 @@ $category_list = $stmt->fetchAll();
                   </button>
                 </td>
                 <td class="col-2">
-                  <button type="button" class="btn btn-primary btn-sm col-5 mx-auto">
-                    Detail
+                  <button type="button" class="btn btn-primary btn-sm col-5 mx-auto edit_btn">
+                    Edit
                   </button>
-                  <button type="button" class="btn btn-danger btn-sm col-5 mx-auto delete-btn">
+                  <button type="button" class="btn btn-danger btn-sm col-5 mx-auto delete_btn" <?php echo $category["count"] ? "disabled": "" ?>>
                     Delete
+                  </button>
+                  <button type="button" class="btn btn-primary btn-sm col-5 mx-auto confirm_btn">
+                    Confirm
+                  </button>
+                  <button type="button" class="btn btn-danger btn-sm col-5 mx-auto cancel_btn">
+                    Cancel
                   </button>
                 </td>
               </tr>
@@ -175,16 +196,11 @@ $category_list = $stmt->fetchAll();
   </div>
 </div>
 
+<script src="./scripts/utils/requestUtils.js"></script>
+<script src="./scripts/api/category.js"></script>
 <script>
-  var is_show_input = false;
-
   $(document).ready(function () {
-    refresh();
-    $(".logOut-btn").click(function () {
-      console.log("c");
-      logout();
-    });
-    $("#new_item_input_tr").hide();
+    initialize();
     $('#example').DataTable({
       searching: false,
       ordering:  false,
@@ -196,70 +212,93 @@ $category_list = $stmt->fetchAll();
         { orderable: false, targets: 0 }
       ]
     });
-    $(".delete-btn").click(function () {
-      console.log($(this).closest('.table_item_row').find(".id-span").text())
-      delete_category($(this).closest('.table_item_row').find(".id-span").text());
+    $(".search_input").keypress(function (e) {
+      if (e.which === 13) {
+        const search_key = $(this).val()
+        if(search_key) {
+          window.location.href = `category.php?search=${search_key}`;
+        } else {
+          window.location.href = `category.php`;
+        }
+      }
+    })
+    $(".top_add_btn").click(function() {
+      change_elem_visible($("#new_item_input_tr"))
+    })
+    $(".top_delete_btn").click(function() {
+      $(".table_item_row").each(function() {
+        if($(this).find(".item_check").is(":checked")) {
+          delete_category($(this).find(".id_span").text())
+        }
+      });
+      location.reload();
+    })
+    $(".new_add_btn").click(function() {
+      const new_item_input = $("#new_item_input_tr")
+      add_category(
+          new_item_input.find(".name_input").val(),
+          new_item_input.find(".desc_input").val()
+      )
+      location.reload();
+    })
+    $(".new_cancel_btn").click(function() {
+      change_elem_visible($("#new_item_input_tr"))
+    })
+    $(".edit_btn").click(function() {
+      console.log(this)
+      change_table_item_visible($(this).closest('.table_item_row'))
+    })
+    $(".delete_btn").click(function() {
+      delete_category($(this).closest('.table_item_row').find(".id_span").text());
+      location.reload();
     });
+    $(".confirm_btn").click(function() {
+      const table_item_row = $(this).closest('.table_item_row')
+      update_category(
+          table_item_row.find(".id_span").text(),
+          table_item_row.find(".name_input").val(),
+          table_item_row.find(".desc_input").val()
+      )
+      location.reload();
+    });
+    $(".cancel_btn").click(function() {
+      change_table_item_visible($(this).closest('.table_item_row'))
+    })
   });
 
-  function add_new_category(){
-    if(is_show_input) {
-      $("#new_item_input_tr").hide();
-    } else {
-      $("#new_item_input_tr").show();
-    }
-    is_show_input = !is_show_input;
-  }
-
-  function submit_new_category(){
-    const values = {
-      'name': $("#name_input").val(),
-      'desc': $("#desc_input").val()
-    };
-    console.log(JSON.stringify(values))
-    $.ajax({
-      url: "api/category/add.php",
-      type: "POST",
-      data: JSON.stringify(values),
-    })
-    .done(function(data) {
-      alert("success" + data);
-      location.reload(true);
-    })
-    .fail(function(data) {
-      alert("failure" + data);
+  function initialize() {
+    $("#new_item_input_tr").hide()
+    $(".table_item_row").each(function() {
+      $(this).find(".name_input").hide()
+      $(this).find(".desc_input").hide()
+      $(this).find(".confirm_btn").hide()
+      $(this).find(".cancel_btn").hide()
     });
   }
 
-  function delete_category(id){
-    const values = {
-      'id': id,
-    };
-    console.log(JSON.stringify(values))
-    $.ajax({
-      url: "api/category/delete.php",
-      type: "POST",
-      data: JSON.stringify(values),
-    })
-        .done(function(data) {
-          alert("success" + data);
-          location.reload(true);
-        })
-        .fail(function(data) {
-          alert("failure" + data);
-        });
-  }
-  function refresh(){
-    console.log(Cookies.get('token'));
-    if(Cookies.get('token')==undefined){
-      window.location.href="login.php";
+  function change_elem_visible(elem) {
+    if(elem.is(":visible")) {
+      elem.hide();
+    } else {
+      elem.show();
     }
   }
-  function logout(){
-    console.log("b");
-    Cookies.remove("token");
-    refresh();
+
+  function change_table_item_visible(item) {
+    [
+        ".name_input",
+        ".desc_input",
+        ".name_span",
+        ".desc_span",
+        ".edit_btn",
+        ".delete_btn",
+        ".confirm_btn",
+        ".cancel_btn",
+    ].forEach((value) => {
+      change_elem_visible(item.find(value));
+    })
   }
+
 </script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 <?php
     include("uuid.php");
-    $dsn = "mysql:host=localhost:3316;dbname=can302_ass1";
+    $dsn = "mysql:host=localhost:3306;dbname=can302_ass1";
     $username = "root";
     $password = null;
 
@@ -16,13 +16,13 @@
     $phone = $_POST["phone"];
 
     
-    $role = 2;
+    $role = 1;
 
     $name = $_POST["name"];
     $birthday = $_POST["birthday"];
 
     $hashed_password = md5($password . $salt);
-    $stmt = $pdo->prepare("INSERT INTO user (id, name, password, salt, role) VALUES (:id, :name, :password,:salt, :role)");
+    $stmt = $pdo->prepare("INSERT INTO user (id, name, password, salt, role, state) VALUES (:id, :name, :password,:salt, :role, 1)");
     
     $stmt->bindParam(':id', $id);
     $stmt->bindParam(':name', $name);
