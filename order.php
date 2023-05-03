@@ -153,6 +153,13 @@
 
 <script>
   $(document).ready(function () {
+    refresh();
+    console.log("b");
+    // const Username=showUserInfo();
+    $(".logout-btn").click(function () {
+      console.log("a");
+      logout();
+    });
     $('#example2').DataTable({
       searching: false,
       ordering:  false,
@@ -166,6 +173,17 @@
     });
 
   });
+  function refresh(){
+    console.log(Cookies.get('token'));
+    if(Cookies.get('token')==undefined){
+      window.location.href="login.php";
+    }
+  }
+  function logout(){
+    console.log("b");
+    Cookies.remove("token");
+    refresh();
+  }
 </script>
 </body>
 </html>

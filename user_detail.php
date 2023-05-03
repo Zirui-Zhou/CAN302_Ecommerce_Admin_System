@@ -530,6 +530,11 @@
   var is_show_address = false;
 
   $(document).ready(function () {
+    refresh();
+    // const Username=showUserInfo();
+    $(".logout-btn").click(function () {
+      logout();
+    });
     $("#new_payment_input_tr").hide();
     $("#new_address_input_tr").hide();
     $('#example').DataTable({
@@ -561,7 +566,7 @@
     });
     $('.selectpicker').selectpicker();
     $("#save-btn").click(function() {
-        // »ñÈ¡±íµ¥Êý¾Ý
+        // ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         var id = $("#inputId").val();
         var name = $("#inputName").val();
         var email = $("#inputEmail").val();
@@ -569,10 +574,10 @@
         var birthday = $("#inputBirth").val();
         var role = $("#inputRole").val();
          var state = $("#inputState").val();
-        // »ñÈ¡ role ºÍ state µÄÑ¡ÏîÖµ
+        // ï¿½ï¿½È¡ role ï¿½ï¿½ state ï¿½ï¿½Ñ¡ï¿½ï¿½Öµ
         var selectedRole = $("#inputRole option:selected").val();
         var selectedState = $("#inputState option:selected").val();
-        // Ê¹ÓÃ AJAX ·¢ËÍÊý¾Ýµ½·þÎñÆ÷¶Ë
+        // Ê¹ï¿½ï¿½ AJAX ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ýµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         $.ajax({
                 url: "save_user.php",
                 method: "POST",
@@ -647,7 +652,17 @@
     }
     is_show_payment = !is_show_payment;
   }
-
+  function refresh(){
+    console.log(Cookies.get('token'));
+    if(Cookies.get('token')==undefined){
+      window.location.href="login.php";
+    }
+  }
+  function logout(){
+    console.log("b");
+    Cookies.remove("token");
+    refresh();
+  }
   function add_new_address(){
     $("#new_address_input_tr").show();
     if(is_show_address) {

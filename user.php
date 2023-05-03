@@ -173,6 +173,13 @@
 </script>
 <script>
 $(document).ready(function() {
+    refresh();
+    console.log("b");
+    // const Username=showUserInfo();
+    $(".logout-btn").click(function () {
+        console.log("a");
+        logout();
+    });
     // Delete button click handler
     $(".user-delete-btn").click(function () {
       console.log($(this).closest('.table_user_row').find(".user_id").text())
@@ -228,6 +235,17 @@ function delete_user(id){
         .fail(function(data) {
           alert("failure" + data);
         });
+}
+function refresh(){
+    console.log(Cookies.get('token'));
+    if(Cookies.get('token')==undefined){
+        window.location.href="login.php";
+    }
+}
+function logout(){
+    console.log("b");
+    Cookies.remove("token");
+    refresh();
 }
 </script>
 

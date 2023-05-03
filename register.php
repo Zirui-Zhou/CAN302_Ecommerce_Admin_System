@@ -24,16 +24,32 @@
                                     <form action="save_register.php" method="post">
                                         
                                     <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputFirstName" name="first_name" type="text" placeholder="Enter your first name" />
-                                            <label for="inputFirstName">Name</label>
-                                    </div>
+                                                        <input class="form-control" id="inputFirstName" name="first_name" type="text" placeholder="Enter your first name" />
+                                                        <label for="inputFirstName">Name</label>
+                                                    </div>
                                                 
-                                          
-                                        <div class="form-floating mb-3 ">
-                                                <input class="form-control" id="inputEmail" name="email" type="email" placeholder="name@example.com" />
-                                                <label for="inputEmail">Email address</label>
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">   
+                                                <div class="form-floating mb-3 mb-md-0">
+                                                    <input class="form-control" id="inputEmail" name="email" type="email" placeholder="name@example.com" />
+                                                    <label for="inputEmail">Email address</label>
+                                                </div>
+                                            </div>    
+                                            <div class="col-md-6">
+                                                <label for="role">Role:</label>
+                                                <div class="form-floating mb-3  float-md-start">
+                                                    <br>
+                                                    <select id="role" name="role">
+                                                        <option value="1">1:admin</option>
+                                                        <option value="2">2:client</option>
+                                                        <?php foreach ($role_options as $value => $text): ?>
+                                                            <option value="<?php echo $value ?>"><?php echo $text ?></option>
+                                                        <?php endforeach; ?>
+                                                    </select>
+                                                    <br>
+                                                </div>
+                                            </div>
                                         </div>
-                                           
                                         <div class="row mb-3">
                                          <div class="col-md-6">
                                                     <div class="form-floating mb-3">
@@ -102,6 +118,7 @@
             var name = $("#inputFirstName").val();
             var email = $("#inputEmail").val();
             var password = $("#inputPassword").val();
+            var role = $("#inpuRole").val();
             var birthday = $("#inputBirthday").val();
 
             $.ajax({
@@ -109,6 +126,7 @@
                 method: "POST",
                 data: {
                     name: name,
+                    role: role,
                     email: email,
                     password: password,
                     phone: phone,

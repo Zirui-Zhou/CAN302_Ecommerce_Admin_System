@@ -179,6 +179,11 @@ $category_list = $stmt->fetchAll();
   var is_show_input = false;
 
   $(document).ready(function () {
+    refresh();
+    $(".logOut-btn").click(function () {
+      console.log("c");
+      logout();
+    });
     $("#new_item_input_tr").hide();
     $('#example').DataTable({
       searching: false,
@@ -244,7 +249,17 @@ $category_list = $stmt->fetchAll();
           alert("failure" + data);
         });
   }
-
+  function refresh(){
+    console.log(Cookies.get('token'));
+    if(Cookies.get('token')==undefined){
+      window.location.href="login.php";
+    }
+  }
+  function logout(){
+    console.log("b");
+    Cookies.remove("token");
+    refresh();
+  }
 </script>
 </body>
 </html>
