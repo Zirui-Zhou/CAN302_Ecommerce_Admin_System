@@ -96,37 +96,51 @@
         <script src="js/scripts.js"></script>
 
         <script>
-            $("#register-btn").click(function(event) {
-            event.preventDefault();
-            var phone = $("#phone").val();
-            var name = $("#inputFirstName").val();
-            var email = $("#inputEmail").val();
-            var password = $("#inputPassword").val();
-            var birthday = $("#inputBirthday").val();
+          $(document).ready(function() {
 
-            $.ajax({
-                url: "save_register.php",
-                method: "POST",
-                data: {
-                    name: name,
-                    email: email,
-                    password: password,
-                    phone: phone,
-                    birthday: birthday,
+            $("form").submit(function(event) {
 
-                },
-                success: function(response) {
-                    console.log(response);
-                    alert("Data saved successfully!");
-                    window.location.href = "login.html";
-                },
-                
-                error: function(xhr, status, error) {
-                    console.log(error);
-                    alert("An error occurred while saving data. Please try again later.");
-                }
+              event.preventDefault();
+
+
+              var password = $("#inputPassword").val();
+              var passwordConfirm = $("#inputPasswordConfirm").val();
+              var phone = $("#phone").val();
+              var name = $("#inputFirstName").val();
+              var email = $("#inputEmail").val();
+              var birthday = $("#inputBirthday").val();
+
+              if (password !== passwordConfirm) {
+                alert("Password and confirm password do not match!");
+                return;
+              }else{
+                $.ajax({
+                        url: "save_register.php",
+                        method: "POST",
+                        data: {
+                            name: name,
+                            email: email,
+                            password: password,
+                            phone: phone,
+                            birthday: birthday,
+
+                        },
+                        success: function(response) {
+                            console.log(response);
+                            alert("Data saved successfully!");
+                            window.location.href = "login.html";
+                        },
+
+                        error: function(xhr, status, error) {
+                            console.log(error);
+                            alert("An error occurred while saving data. Please try again later.");
+                        }
+                     });
+              }
+
+              $(this).unbind("submit").submit();
             });
-        });
+          });
         </script>
 </body>
 </html>
