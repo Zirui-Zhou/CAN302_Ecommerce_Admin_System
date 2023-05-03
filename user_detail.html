@@ -55,10 +55,6 @@
 
         </div>
       </div>
-      <div class="sb-sidenav-footer">
-        <div class="small">Logged in as:</div>
-        Zirui Zhou
-      </div>
     </nav>
   </div>
   <div id="layoutSidenav_content">
@@ -530,7 +526,6 @@
     <footer class="py-4 bg-light mt-auto">
       <div class="container-fluid px-4">
         <div class="d-flex align-items-center justify-content-between small">
-          <div class="text-muted">Copyright &copy; Zirui Zhou 2023</div>
           <div>
             <a href="#">Privacy Policy</a>
             &middot;
@@ -542,9 +537,11 @@
   </div>
 </div>
 
-
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
 <script>
   $(document).ready(function () {
+    console.log("a");
+    refresh();
     $('#example').DataTable({
       searching: false,
       ordering:  false,
@@ -573,7 +570,12 @@
       $(this).val($(this).val().replace(/(\d{3})\-?(\d{4})\-?(\d{4})/,'$1-$2-$3'))
     });
   });
-
+  function refresh(){
+    console.log(Cookies.get('token'));
+    if(Cookies.get('token')==undefined){
+      window.location.href="login.php";
+    }
+  }
 
 </script>
 </body>
