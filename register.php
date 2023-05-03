@@ -69,7 +69,7 @@
                                     </form>
                                     </div>
                                     <div class="card-footer text-center py-3">
-                                        <div class="small"><a href="login.html">Have an account? Go to login</a></div>
+                                        <div class="small"><a href="login.php">Have an account? Go to login</a></div>
                                     </div>
                                 </div>
                             </div>
@@ -128,7 +128,7 @@
                         success: function(response) {
                             console.log(response);
                             alert("Data saved successfully!");
-                            window.location.href = "login.html";
+                            window.location.href = "login.php";
                         },
 
                         error: function(xhr, status, error) {
@@ -138,7 +138,7 @@
                      });
               }
 
-              $(this).unbind("submit").submit();
+              // $(this).unbind("submit").submit();
             });
           });
         </script>
