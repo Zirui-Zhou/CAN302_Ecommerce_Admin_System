@@ -16,7 +16,7 @@
     $phone = $_POST["phone"];
 
     
-    $role = 2;
+    $role = 1;
 
     $name = $_POST["name"];
     $birthday = $_POST["birthday"];
