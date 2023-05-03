@@ -18,8 +18,29 @@
                 <li><a class="dropdown-item" href="#!">Settings</a></li>
                 <li><a class="dropdown-item" href="#!">Activity Log</a></li>
                 <li><hr class="dropdown-divider" /></li>
-                <li><a class="dropdown-item" href="#!">Logout</a></li>
+                <li><a class="btn btn-danger logOut-btn" href="#!">Logout</a></li>
             </ul>
         </li>
     </ul>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            refresh();
+            $(".logOut-btn").click(function () {
+                console.log("c");
+                logout();
+            });
+        });
+        function refresh(){
+            console.log(Cookies.get('token'));
+            if(Cookies.get('token')==undefined){
+                window.location.href="login.php";
+            }
+        }
+        function logout(){
+            console.log("b");
+            Cookies.remove("token");
+            refresh();
+        }
+    </script>
 </nav>

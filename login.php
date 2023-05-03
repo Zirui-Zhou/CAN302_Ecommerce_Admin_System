@@ -114,7 +114,7 @@
                         console.log(2);
                         alert("Opps! There are something wrong.. (X_X) ");
                     } else {
-                        window.location.href="index.html"
+                        window.location.href="index.php"
                     }
                 })
                 .fail(function(data) {
