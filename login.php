@@ -65,9 +65,9 @@
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
         <script  type="module">
-        $(document).ready(function () {
+            $(document).ready(function () {
             $(".login-btn").click(function () {
                 const name = $(this).closest('#login-form').find("#inputEmail").val()
                 const password = $(this).closest('#login-form').find("#inputPassword").val()
