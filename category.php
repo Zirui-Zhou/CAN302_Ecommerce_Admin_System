@@ -158,7 +158,7 @@ $category_list = $stmt->fetchAll();
                 </td>
                 <td>
                   <button
-                      onclick=<?php echo "\"location.href = 'product.php?c={$category['id']}';\"" ?>
+                      onclick=<?php echo "\"location.href = 'product.php?category={$category['id']}';\"" ?>
                       type="button"
                       class="btn btn-primary btn-sm mx-auto"
                   >
